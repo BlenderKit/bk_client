@@ -1,0 +1,33 @@
+{
+    "files.insertFinalNewline": true,
+
+    "[go]": {
+        "editor.defaultFormatter": "golang.go",
+        "editor.formatOnSave": true
+    },
+
+    // The Python here is only the dev.py helper and the client/tools recipes,
+    // linted/formatted with ruff via uv (see pyproject.toml).
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true
+    },
+
+    "cSpell.words": [
+        "blenderkit",
+        "bkclientjs",
+        "bkit",
+        "gofmt",
+        "ldflags",
+        "pydoclint",
+        "uvx"
+    ],
+
+    "chat.agent.enabled": true,
+    "github.copilot.chat.agent.currentEditorContext.enabled": true,
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+    "github.copilot.chat.agent.thinkingTool": true,
+    "chat.instructionsFilesLocations": {
+        ".github/instructions": true
+    }
+}

@@ -1,0 +1,87 @@
+[project]
+name = "blenderkit-client-tools"
+version = "0.0.0"
+description = "Python tooling config for the BlenderKit-Client repository (lints client/tools recipes)."
+requires-python = ">=3.10"
+dependencies = []
+
+# these are not part of any distribution - dev tooling only
+[dependency-groups]
+dev = [
+    "ruff>=0.15.6",
+    "pydoclint>=0.8.3",
+]
+
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+include = [
+    "pyproject.toml",
+    "client/tools/**/*.py",
+    "dev.py",
+]
+exclude = [
+    "out",
+    "client_builds",
+    "*.tmp",
+    "__pycache__/**",
+    ".venv/**",
+    "*.pyi",
+]
+
+[tool.ruff.format]
+line-ending = "auto"
+
+[tool.ruff.lint]
+select = ["F", "E", "W", "C90", "I", "N", "D", "UP", "S1", "S2", "S3", "S5", "BLE", "FBT",
+    "B", "A", "C4", "COM", "DTZ", "T10", "FA", "ISC", "ICN", "LOG", "G", "INP", "PIE", "T20", "Q", "RSE", "RET", "SLF",
+    "SLOT", "SIM", "TID",
+    "TC001", "TC004", "TC005", "TC010",
+    "INT", "ARG", "FIX", "ERA", "PL", "TRY", "FLY", "PERF", "RUF"
+]
+
+ignore = [
+    "E501", # Line too long
+    "COM812", # missing-trailing-comma - conflicts with the ruff formatter
+    "D105", # https://docs.astral.sh/ruff/rules/undocumented-magic-method/
+    "D107", # https://docs.astral.sh/ruff/rules/undocumented-public-init/
+    "PLC0415", # https://docs.astral.sh/ruff/rules/import-outside-top-level/
+    "RET504", # https://docs.astral.sh/ruff/rules/unnecessary-assign/
+]
+
+# The bundled recipes in client/tools are standalone scripts run under headless
+# Blender. They legitimately use print() as their stdout IPC protocol, catch
+# broad exceptions for sandbox robustness, and contain inherently branchy
+# add-on discovery logic. These patterns are by design, so we relax the rules
+# that fight them while keeping the rest of the strict ruleset (incl. docstrings).
+[tool.ruff.lint.per-file-ignores]
+"client/tools/**" = [
+    "T201",    # print - used as the stdout IPC protocol (BK_STATUS, BK_PROGRESS…)
+    "BLE001",  # blind except - robustness inside the Blender sandbox
+    "C901",    # complex-structure - add-on discovery is inherently branchy
+    "PLR0912", # too-many-branches
+    "PLR0915", # too-many-statements
+    "PLR2004", # magic-value-comparison
+    "TRY003",  # raise-vanilla-args - descriptive error messages are useful here
+    "TRY300",  # try-consider-else
+    "PERF203", # try-except-in-loop
+    "FBT001",  # boolean positional arg - matches bpy operator conventions
+    "FBT003",  # boolean positional value in call - bpy calls
+]
+"dev.py" = [
+    "T201",    # print - dev.py is a CLI helper; print is its user-facing output
+    "ARG001",  # unused-function-argument - uniform argparse handler signature
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+
+[tool.pydoclint]
+style = "google"
+arg-type-hints-in-docstring = false
+check-return-types = false
+ignore-private-args = true
+ignore-underscore-args = true
+exclude = "\\.venv"
