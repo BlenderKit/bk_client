@@ -49,7 +49,7 @@ const (
 	OAUTH_CLIENT_ID = "IdFRwa3SGA8eMpzhRVFMg5Ts8sPK93xBjif93x0F"
 
 	// PATHS
-	server_default   = "https://www.blendkit.com" // default address to production blendkit server
+	server_default   = "https://www.blendkit.com" // default address to production Blendkit server
 	gravatar_dirname = "bkit_g"                   // directory in safeTempDir() for gravatar images
 	cleanfile_path   = "blendfiles/cleaned.blend" // relative path to clean blend file in add-on directory
 
@@ -751,63 +751,134 @@ func assetSearchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // searchRetryMaxAttempts is the total number of attempts (including the first)
-// for search requests that receive HTTP 429 (Too Many Requests).
-const searchRetryMaxAttempts = 3
-const searchRetryDelay = 5 * time.Second
+// performed by doAssetSearch when the server replies with HTTP 429
+// (Too Many Requests). The backend currently caps anonymous traffic at
+// 100 requests/minute and Cloudflare may additionally answer with error
+// code 1015 — both are recoverable with a short backoff.
+const searchRetryMaxAttempts = 4
 
-// fetchSearchWithRetry performs the search HTTP GET, retrying up to
-// searchRetryMaxAttempts times when the server replies with HTTP 429.
-// On success the caller owns resp.Body and must close it. On failure resp
-// is nil and err describes the cause (transport error, request build error,
-// or "rate limited after N attempts").
-func fetchSearchWithRetry(data SearchTaskData) (*http.Response, error) {
-	var lastBody, lastStatus string
-	for attempt := 1; attempt <= searchRetryMaxAttempts; attempt++ {
-		req, err := http.NewRequest("GET", data.URLQuery, nil)
-		if err != nil {
-			return nil, fmt.Errorf("creating request: %w", err)
-		}
-		req.Header = getHeaders(data.APIKey, *SystemID, data.AddonVersion, data.PlatformVersion)
+// searchRetryBaseDelay is the starting delay for the exponential backoff
+// used by doAssetSearch when retrying on HTTP 429. Subsequent delays double
+// up to searchRetryMaxDelay. If the response carries a Retry-After header it
+// is respected instead (capped to searchRetryMaxDelay).
+const searchRetryBaseDelay = 2 * time.Second
+const searchRetryMaxDelay = 30 * time.Second
 
-		resp, err := ClientAPI.Do(req)
-		if err != nil {
-			return nil, err
-		}
-		if resp.StatusCode != http.StatusTooManyRequests {
-			return resp, nil
-		}
+// searchThrottleMu protects searchThrottleUntil and is used to publish a
+// short global cooldown after a search hits HTTP 429, so subsequent search
+// requests preemptively wait instead of piling onto the rate limit again.
+var (
+	searchThrottleMu    sync.Mutex
+	searchThrottleUntil time.Time
+)
 
-		// HTTP 429 - remember body for the final error message, then back off.
-		_, lastBody, _ = ParseFailedHTTPResponse(resp)
-		lastStatus = resp.Status
-		resp.Body.Close()
-
-		if attempt == searchRetryMaxAttempts {
-			break
-		}
-		BKLog.Printf("%v search: HTTP 429, retrying in %v (attempt %d/%d), query: %v",
-			EmoWarning, searchRetryDelay, attempt, searchRetryMaxAttempts, data.URLQuery)
-		time.Sleep(searchRetryDelay)
+// waitForSearchThrottle blocks until any active global search throttle has
+// expired. Cheap no-op when no throttle is active.
+func waitForSearchThrottle() {
+	searchThrottleMu.Lock()
+	until := searchThrottleUntil
+	searchThrottleMu.Unlock()
+	if d := time.Until(until); d > 0 {
+		time.Sleep(d)
 	}
-	return nil, fmt.Errorf("rate-limited after %d attempts: %s, status (%s)",
-		searchRetryMaxAttempts, lastBody, lastStatus)
+}
+
+// setSearchThrottle extends the global search throttle so it expires no
+// sooner than now+d. Shorter pending throttles are upgraded; longer ones
+// are kept untouched.
+func setSearchThrottle(d time.Duration) {
+	if d <= 0 {
+		return
+	}
+	deadline := time.Now().Add(d)
+	searchThrottleMu.Lock()
+	if deadline.After(searchThrottleUntil) {
+		searchThrottleUntil = deadline
+	}
+	searchThrottleMu.Unlock()
+}
+
+// parseRetryAfter returns the duration advertised by the Retry-After header,
+// supporting both the "delta-seconds" and the HTTP-date formats. Returns 0
+// if the header is missing or cannot be parsed.
+func parseRetryAfter(h string) time.Duration {
+	if h == "" {
+		return 0
+	}
+	if secs, err := strconv.Atoi(strings.TrimSpace(h)); err == nil && secs > 0 {
+		return time.Duration(secs) * time.Second
+	}
+	if t, err := http.ParseTime(h); err == nil {
+		if d := time.Until(t); d > 0 {
+			return d
+		}
+	}
+	return 0
 }
 
 func doAssetSearch(data SearchTaskData, taskUUID string) {
 	AddTaskCh <- NewTask(data, data.AppID, taskUUID, "search")
 
-	resp, err := fetchSearchWithRetry(data)
-	if err != nil {
-		// Transport-level error from ClientAPI.Do (timeouts, DNS, TLS, ...)
-		// arrives as *url.Error; strip the verbose "Get <url>:" prefix so the
-		// message fits inside user screenshots, same as before.
-		var urlErr *url.Error
-		if errors.As(err, &urlErr) {
-			shortened := fmt.Errorf("search GET: %w", errors.Unwrap(err))
-			TaskErrorCh <- &TaskError{AppID: data.AppID, TaskID: taskUUID, Error: shortened, MessageDetailed: err.Error()}
+	// Honor any active global cooldown from a previous 429 before firing.
+	waitForSearchThrottle()
+
+	var (
+		resp           *http.Response
+		err            error
+		lastRespString string
+		lastStatus     string
+	)
+
+	for attempt := 0; attempt < searchRetryMaxAttempts; attempt++ {
+		req, reqErr := http.NewRequest("GET", data.URLQuery, nil)
+		if reqErr != nil {
+			err = fmt.Errorf("search - creating request: %w", reqErr)
+			TaskErrorCh <- &TaskError{AppID: data.AppID, TaskID: taskUUID, Error: err}
 			return
 		}
-		err = fmt.Errorf("search: %w, query: %v", err, data.URLQuery)
+		req.Header = getHeaders(data.APIKey, *SystemID, data.AddonVersion, data.PlatformVersion)
+
+		resp, err = ClientAPI.Do(req)
+		if err != nil {
+			// err has the interesting stuff at the end... err = Get "https://www.blendkit.com/api/v1/search/?query=dog+asset_type:model+sexualizedContent:False+order:_score&dict_parameters=1&page_size=15&addon_version=3.15.0&blender_version=4.4.0": read tcp 192.168.4.36:61092->104.26.5.20:443: read: operation timed out
+			shortened_err := errors.Unwrap(err)                         // Get rid off the url.Error part - Get "https://blendkit.com/api/v1/search/....."
+			shortened_err = fmt.Errorf("search GET: %w", shortened_err) //squeezes into user's screenshots
+			TaskErrorCh <- &TaskError{AppID: data.AppID, TaskID: taskUUID, Error: shortened_err, MessageDetailed: err.Error()}
+			return
+		}
+
+		if resp.StatusCode != http.StatusTooManyRequests {
+			break
+		}
+
+		// HTTP 429 - parse body for logging, then back off and retry.
+		_, lastRespString, _ = ParseFailedHTTPResponse(resp)
+		lastStatus = resp.Status
+		retryAfter := parseRetryAfter(resp.Header.Get("Retry-After"))
+		resp.Body.Close()
+		resp = nil
+
+		if attempt == searchRetryMaxAttempts-1 {
+			break // no more retries left
+		}
+
+		delay := retryAfter
+		if delay <= 0 {
+			delay = searchRetryBaseDelay * (1 << attempt) // 2s, 4s, 8s, ...
+		}
+		if delay > searchRetryMaxDelay {
+			delay = searchRetryMaxDelay
+		}
+		// Publish to the global throttle so concurrently arriving search
+		// requests preemptively back off instead of stacking more 429s.
+		setSearchThrottle(delay)
+		BKLog.Printf("%v search: HTTP 429 received, retrying in %v (attempt %d/%d), query: %v",
+			EmoWarning, delay, attempt+1, searchRetryMaxAttempts, data.URLQuery)
+		time.Sleep(delay)
+	}
+
+	if resp == nil {
+		err := fmt.Errorf("search: %s, status (%s), query: %v", lastRespString, lastStatus, data.URLQuery)
 		TaskErrorCh <- &TaskError{AppID: data.AppID, TaskID: taskUUID, Error: err}
 		return
 	}
@@ -964,10 +1035,20 @@ func downloadImageBatch(tasks []*Task, block bool) {
 	if len(tasks) == 0 {
 		return
 	}
+	// Cap concurrent thumbnail HTTP requests so a single search page (15
+	// assets x 4 thumbnail variants = up to ~60 GETs) does not fan out into
+	// the per-IP rate-limit window in one burst. Smooth scrolling still
+	// preloads the next page worth of thumbs — just paced.
+	const maxConcurrentThumbs = 6
+	sem := make(chan struct{}, maxConcurrentThumbs)
 	wg := new(sync.WaitGroup)
 	for _, task := range tasks {
 		wg.Add(1)
-		go DownloadThumbnail(task, wg)
+		sem <- struct{}{} // acquire slot (blocks once we hit maxConcurrentThumbs in flight)
+		go func(t *Task) {
+			defer func() { <-sem }()
+			DownloadThumbnail(t, wg)
+		}(task)
 	}
 	if block {
 		wg.Wait()

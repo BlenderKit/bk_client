@@ -255,7 +255,7 @@ func doRunBlenderScript(data RunBlenderScriptData, taskID string) {
 	// sys.argv[-1] (every script in tools/ follows this convention).
 	var paramsPath string
 	if data.Params != nil {
-		f, err := os.CreateTemp("", "blenderkit_params_*.json")
+		f, err := os.CreateTemp("", "blendkit_params_*.json")
 		if err != nil {
 			TaskErrorCh <- &TaskError{AppID: data.AppID, TaskID: taskID,
 				Error: fmt.Errorf("creating params tempfile: %w", err)}
