@@ -332,8 +332,8 @@ def _verify_windows(file_path: str) -> bool:
     output, _ = process.communicate()
     stdout = str(output)
     expected_fields = [
-        "CN=Blender Kit s.r.o.",
-        "O=Blender Kit s.r.o.",
+        "CN=BlenderKit s.r.o.",
+        "O=BlenderKit s.r.o.",
         "L=Prague",
         "ST=Prague",
         "C=CZ",
