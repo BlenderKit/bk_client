@@ -1,0 +1,163 @@
+name: main-push
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  get_version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.getversion.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Read VERSION file
+        id: getversion
+        working-directory: ./client
+        run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+      - name: Echo version
+        run: echo ${{ steps.getversion.outputs.version }}
+
+  build_linux_arm:
+    runs-on: ubuntu-24.04-arm
+    needs: get_version
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: './client/go.mod'
+          cache-dependency-path: './client/go.sum'
+        id: go
+      - name: Check Go env
+        working-directory: ./client
+        run: go env
+      - name: Build Blendkit_Client
+        working-directory: ./client
+        run: CGO_ENABLED=1 go build -o out/blendkit-client-linux-arm64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: blendkit-client-linux-arm64
+          path: client/out/blendkit-client-linux-arm64
+          archive: false
+      
+  build_linux_x86_64:
+    runs-on: ubuntu-24.04
+    needs: get_version
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: './client/go.mod'
+          cache-dependency-path: './client/go.sum'
+        id: go
+      - name: Check Go env
+        working-directory: ./client
+        run: go env
+      - name: Build Blendkit_Client
+        working-directory: ./client
+        run: CGO_ENABLED=1 go build -o out/blendkit-client-linux-x86_64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: blendkit-client-linux-x86_64
+          path: client/out/blendkit-client-linux-x86_64
+          archive: false
+
+  build_macos_arm:
+    runs-on: macos-26-intel
+    needs: get_version
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: './client/go.mod'
+          cache-dependency-path: './client/go.sum'
+        id: go
+      - name: Check Go env
+        working-directory: ./client
+        run: go env
+      - name: Build Blendkit_Client
+        working-directory: ./client
+        run: CGO_ENABLED=1 go build -o out/blendkit-client-macos-arm64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: blendkit-client-macos-arm64
+          path: client/out/blendkit-client-macos-arm64
+          archive: false
+
+  build_macos_x86_64:
+    runs-on: macos-26-intel
+    needs: get_version
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: './client/go.mod'
+          cache-dependency-path: './client/go.sum'
+        id: go
+      - name: Check Go env
+        working-directory: ./client
+        run: go env
+      - name: Build Blendkit_Client
+        working-directory: ./client
+        run: CGO_ENABLED=1 go build -o out/blendkit-client-macos-x86_64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: blendkit-client-macos-x86_64
+          path: client/out/blendkit-client-macos-x86_64
+          archive: false
+
+  build_windows_arm:
+    runs-on: windows-11-arm
+    needs: get_version
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: './client/go.mod'
+          cache-dependency-path: './client/go.sum'
+        id: go
+      - name: Check Go env
+        working-directory: ./client
+        run: go env
+      - name: Build Blendkit_Client
+        working-directory: ./client
+        env:
+          CGO_ENABLED: '1'
+        run: go build -o out/blendkit-client-windows-arm64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: blendkit-client-windows-arm64
+          path: client/out/blendkit-client-windows-arm64
+          archive: false
+
+  build_windows_x86_64:
+    runs-on: windows-latest
+    needs: get_version
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: './client/go.mod'
+          cache-dependency-path: './client/go.sum'
+        id: go
+      - name: Check Go env
+        working-directory: ./client
+        run: go env
+      - name: Build Blendkit_Client
+        working-directory: ./client
+        env:
+          CGO_ENABLED: '1'
+        run: go build -o out/blendkit-client-windows-x86_64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: blendkit-client-windows-x86_64
+          path: client/out/blendkit-client-windows-x86_64
+          archive: false
