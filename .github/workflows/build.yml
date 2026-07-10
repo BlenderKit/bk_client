@@ -36,11 +36,11 @@ jobs:
         run: go env
       - name: Build Blendkit_Client
         working-directory: ./client
-        run: CGO_ENABLED=1 go build -o out/blendkit-client-linux-arm64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
+        run: CGO_ENABLED=1 go build -o out/bk_client-linux-arm64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
       - uses: actions/upload-artifact@v7
         with:
-          name: blendkit-client-linux-arm64
-          path: client/out/blendkit-client-linux-arm64
+          name: bk_client-linux-arm64
+          path: client/out/bk_client-linux-arm64
           archive: false
       
   build_linux_x86_64:
@@ -59,11 +59,11 @@ jobs:
         run: go env
       - name: Build Blendkit_Client
         working-directory: ./client
-        run: CGO_ENABLED=1 go build -o out/blendkit-client-linux-x86_64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
+        run: CGO_ENABLED=1 go build -o out/bk_client-linux-x86_64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
       - uses: actions/upload-artifact@v7
         with:
-          name: blendkit-client-linux-x86_64
-          path: client/out/blendkit-client-linux-x86_64
+          name: bk_client-linux-x86_64
+          path: client/out/bk_client-linux-x86_64
           archive: false
 
   build_macos_arm:
@@ -82,11 +82,11 @@ jobs:
         run: go env
       - name: Build Blendkit_Client
         working-directory: ./client
-        run: CGO_ENABLED=1 go build -o out/blendkit-client-macos-arm64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
+        run: CGO_ENABLED=1 go build -o out/bk_client-macos-arm64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
       - uses: actions/upload-artifact@v7
         with:
-          name: blendkit-client-macos-arm64
-          path: client/out/blendkit-client-macos-arm64
+          name: bk_client-macos-arm64
+          path: client/out/bk_client-macos-arm64
           archive: false
 
   build_macos_x86_64:
@@ -105,11 +105,11 @@ jobs:
         run: go env
       - name: Build Blendkit_Client
         working-directory: ./client
-        run: CGO_ENABLED=1 go build -o out/blendkit-client-macos-x86_64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
+        run: CGO_ENABLED=1 go build -o out/bk_client-macos-x86_64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
       - uses: actions/upload-artifact@v7
         with:
-          name: blendkit-client-macos-x86_64
-          path: client/out/blendkit-client-macos-x86_64
+          name: bk_client-macos-x86_64
+          path: client/out/bk_client-macos-x86_64
           archive: false
 
   build_windows_arm:
@@ -130,11 +130,11 @@ jobs:
         working-directory: ./client
         env:
           CGO_ENABLED: '1'
-        run: go build -o out/blendkit-client-windows-arm64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
+        run: go build -o out/bk_client-windows-arm64.exe -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
       - uses: actions/upload-artifact@v7
         with:
-          name: blendkit-client-windows-arm64
-          path: client/out/blendkit-client-windows-arm64
+          name: bk_client-windows-arm64.exe
+          path: client/out/bk_client-windows-arm64.exe
           archive: false
 
   build_windows_x86_64:
@@ -155,9 +155,9 @@ jobs:
         working-directory: ./client
         env:
           CGO_ENABLED: '1'
-        run: go build -o out/blendkit-client-windows-x86_64 -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
+        run: go build -o out/bk_client-windows-x86_64.exe -ldflags "-X main.ClientVersion=${{ needs.get_version.outputs.version }}"
       - uses: actions/upload-artifact@v7
         with:
-          name: blendkit-client-windows-x86_64
-          path: client/out/blendkit-client-windows-x86_64
+          name: bk_client-windows-x86_64.exe
+          path: client/out/bk_client-windows-x86_64.exe
           archive: false
