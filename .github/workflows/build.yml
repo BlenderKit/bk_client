@@ -172,21 +172,30 @@ jobs:
           merge-multiple: true
       - name: Display structure of downloaded files
         run: ls -R out/
+    
       - name: Materialize p12 certificate
+        env:
+          APPLE_DEV_CERTIFICATE: ${{ secrets.APPLE_DEV_CERTIFICATE }}
         run: echo $APPLE_DEV_CERTIFICATE | base64 --decode > cert.p12
+      
       - name: MacOS x86_64 - Sign and Notarize
         uses: indygreg/apple-code-sign-action@v1
+        env:
+          APPLE_DEV_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DEV_CERTIFICATE_PASSWORD }}
         with:
           input_path: out/bk_client-macos-x86_64
           sign: true
           notarize: true
           p12_file: cert.p12
-          p12_password: ${{ secrets.APPLE_DEV_CERTIFICATE_PASSWORD }}
+          p12_password: ${{ env.APPLE_DEV_CERTIFICATE_PASSWORD }}
+      
       - name: MacOS arm64 - Sign and Notarize
         uses: indygreg/apple-code-sign-action@v1
+        env:
+          APPLE_DEV_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DEV_CERTIFICATE_PASSWORD }}
         with:
           input_path: out/bk_client-macos-arm64
           sign: true
           notarize: true
           p12_file: cert.p12
-          p12_password: ${{ secrets.APPLE_DEV_CERTIFICATE_PASSWORD }}
+          p12_password: ${{ env.APPLE_DEV_CERTIFICATE_PASSWORD }}
