@@ -173,6 +173,12 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R out/
     
+      - name: Check secret APPLE_DEV_CERTIFICATE exists
+        run: echo ${{secrets.APPLE_DEV_CERTIFICATE}}
+
+      - name: Check secret APPLE_DEV_CERTIFICATE_PASSWORD exists
+        run: echo ${{secrets.APPLE_DEV_CERTIFICATE_PASSWORD}}
+
       - name: Materialize p12 certificate
         env:
           APPLE_DEV_CERTIFICATE: ${{ secrets.APPLE_DEV_CERTIFICATE }}
