@@ -75,6 +75,42 @@ func validSystemID(s string) bool {
 	return true
 }
 
+// systemIDFilePath mirrors the add-on's paths.get_system_id_filepath().
+func systemIDFilePath() string {
+	home := os.Getenv("XDG_DATA_HOME")
+	if home == "" {
+		var err error
+		home, err = os.UserHomeDir()
+		if err != nil {
+			return ""
+		}
+	}
+	return filepath.Join(home, "blenderkit_data", "system_id")
+}
+
+// persistedSystemID returns the machine ID the add-on stored, or "" when absent.
+//
+// The add-on passes the same value via --system_id when it spawns the Client, but
+// a Client started standalone (or by another software's add-on) gets no flag, and
+// must not fall back to a MAC-derived ID the add-on no longer uses: the two would
+// then report different machines for the same user. The file is the shared source
+// of truth; the Client only ever reads it.
+func persistedSystemID() string {
+	path := systemIDFilePath()
+	if path == "" {
+		return ""
+	}
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return ""
+	}
+	id := strings.TrimSpace(string(content))
+	if !validSystemID(id) {
+		return ""
+	}
+	return id
+}
+
 func StringToAddonVersion(s string) (*AddonVersionStruct, error) {
 	adVer := &AddonVersionStruct{}
 	if s == "" {

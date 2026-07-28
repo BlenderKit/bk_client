@@ -20,6 +20,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"strings"
@@ -203,5 +205,32 @@ func TestValidSystemID(t *testing.T) {
 		if actual := validSystemID(test.id); actual != test.expected {
 			t.Errorf("validSystemID(%q) = %v; want %v", test.id, actual, test.expected)
 		}
+	}
+}
+
+func TestPersistedSystemID(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("XDG_DATA_HOME", dir)
+	if err := os.MkdirAll(filepath.Join(dir, "blenderkit_data"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(dir, "blenderkit_data", "system_id")
+
+	if got := persistedSystemID(); got != "" {
+		t.Errorf("missing file: got %q; want empty", got)
+	}
+
+	if err := os.WriteFile(path, []byte("000000000000123\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if got := persistedSystemID(); got != "000000000000123" {
+		t.Errorf("valid file: got %q; want 000000000000123", got)
+	}
+
+	if err := os.WriteFile(path, []byte("not-an-id"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if got := persistedSystemID(); got != "" {
+		t.Errorf("garbage file: got %q; want empty (falls back to MAC)", got)
 	}
 }
