@@ -273,12 +273,17 @@ func main() {
 	systemIDOverride := flag.String("system_id", "", "stable machine ID (15 digits) persisted by the add-on; overrides the MAC-derived ID so telemetry survives MAC randomization")
 	flag.Parse()
 
+	// Machine ID precedence: --system_id from the spawning add-on, then the ID the
+	// add-on persisted (a standalone Client gets no flag but must report the same
+	// machine), and only then the MAC-derived fallback set in init().
 	if *systemIDOverride != "" {
 		if validSystemID(*systemIDOverride) {
 			SystemID = systemIDOverride
 		} else {
 			BKLog.Printf("Ignoring invalid --system_id %q, keeping MAC-derived ID", *systemIDOverride)
 		}
+	} else if persisted := persistedSystemID(); persisted != "" {
+		SystemID = &persisted
 	}
 
 	// A standalone Client is one a user started directly — no add-on passed its
