@@ -269,8 +269,22 @@ func main() {
 	StartingAddonVersion = flag.String("version", "", "version of the add-on which starts the Client")
 	StartingSoftwareName = flag.String("software", "", "name of the software whose add-on starts the Client")
 	StartingPID = flag.String("pid", "", "PID of the process (running software) whose add-on starts the Client")
+	systemIDOverride := flag.String("system_id", "", "stable machine ID (15 digits) persisted by the add-on; overrides the MAC-derived ID so telemetry survives MAC randomization")
 	singleInstance := flag.Bool("single-instance", false, "if a Client of this version is already running, exit gracefully and leave the original running")
 	flag.Parse()
+
+	// Machine ID precedence: --system_id from the spawning add-on, then the ID the
+	// add-on persisted (a standalone Client gets no flag but must report the same
+	// machine), and only then the MAC-derived fallback set in init().
+	if *systemIDOverride != "" {
+		if validSystemID(*systemIDOverride) {
+			SystemID = systemIDOverride
+		} else {
+			BKLog.Printf("Ignoring invalid --system_id %q, keeping MAC-derived ID", *systemIDOverride)
+		}
+	} else if persisted := persistedSystemID(); persisted != "" {
+		SystemID = &persisted
+	}
 
 	// A standalone Client is one a user started directly — no add-on passed its
 	// version. Standalone Clients are persistent apps: they get a system tray icon
