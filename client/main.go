@@ -350,6 +350,8 @@ func main() {
 	// BASIC functionality
 	mux.HandleFunc("/report", reportHandler)
 	mux.HandleFunc("/"+vapi+"/report", reportHandler)
+	mux.HandleFunc("/report_event", ReportEventHandler)
+	mux.HandleFunc("/"+vapi+"/report_event", ReportEventHandler)
 	mux.HandleFunc("/shutdown", shutdownHandler)
 	mux.HandleFunc("/"+vapi+"/shutdown", shutdownHandler)
 	mux.HandleFunc("/debug", DebugNetworkHandler)
