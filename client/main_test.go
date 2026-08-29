@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/rand/v2"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -176,6 +177,102 @@ func TestDictToParams(t *testing.T) {
 			}
 		})
 	}
+}
+
+// Test helper function to generate random connected Software.
+func generateSoftware(seed uint64) Software {
+	r := rand.New(rand.NewPCG(seed, seed))
+	id := r.IntN(4000) + 1000
+	version := fmt.Sprintf(
+		"%d.%d.%d",
+		r.IntN(100),
+		r.IntN(100),
+		r.IntN(100),
+	)
+	addon_version := fmt.Sprintf(
+		"%d.%d.%d",
+		r.IntN(100),
+		r.IntN(100),
+		r.IntN(100),
+	)
+	names := []string{"Blender", "Godot", "Maya", "Unreal"}
+	index := r.IntN(len(names))
+	software := Software{
+		AppID:        id,
+		Name:         names[index],
+		Version:      version,
+		AddonVersion: addon_version,
+	}
+	return software
+}
+
+// Test helper function to generate random map of connected Softwares of given size.
+// Seed is used to keep the "random" values same on every run of the tests.
+func generateSoftwares(size, seed uint64) map[int]Software {
+	sm := map[int]Software{}
+	for i := range size {
+		software := generateSoftware(seed + i)
+		sm[software.AppID] = software
+	}
+	return sm
+}
+
+func BenchmarkGetAvailableSoftwares(b *testing.B) {
+	AvailableSoftwares = make(map[int]Software)
+	AvailableSoftwaresMux = sync.Mutex{}
+	benches := []struct {
+		name        string
+		softwareMap map[int]Software
+	}{
+		{
+			name:        "0 running", // starting work
+			softwareMap: map[int]Software{},
+		},
+		{
+			name: "1 running", // this is like normal use case
+			softwareMap: map[int]Software{
+				1001: {AppID: 1001, Name: "Blender", Version: "4.2.1", AddonVersion: "3.13.0"},
+			},
+		},
+		{
+			name: "2 running", // quite normal use
+			softwareMap: map[int]Software{
+				1111: {AppID: 1001, Name: "Blender", Version: "4.2.1", AddonVersion: "3.13.0"},
+				2222: {AppID: 2222, Name: "Godot", Version: "4.3.0", AddonVersion: "0.1.0"},
+			},
+		},
+		{
+			name: "4 running", // quite normal use
+			softwareMap: map[int]Software{
+				1111: {AppID: 1001, Name: "Blender", Version: "4.2.1", AddonVersion: "3.13.0"},
+				2222: {AppID: 2222, Name: "Godot", Version: "4.3.0", AddonVersion: "0.1.0"},
+				3333: {AppID: 3333, Name: "Maya", Version: "2027.2", AddonVersion: "0.2.0"},
+				4444: {AppID: 4444, Name: "Unreal", Version: "5.8", AddonVersion: "0.0.11"},
+			},
+		},
+		{
+			name:        "8 running", // quite big usage
+			softwareMap: generateSoftwares(8, 111),
+		},
+		{
+			name:        "64 running", // unexpected extreme just for testing
+			softwareMap: generateSoftwares(64, 111),
+		},
+	}
+	for _, bench := range benches {
+		b.Run(bench.name, func(b *testing.B) {
+			AvailableSoftwaresMux.Lock()
+			AvailableSoftwares = bench.softwareMap
+			AvailableSoftwaresMux.Unlock()
+			for b.Loop() {
+				// TODO: looks that there is a space for improvement of the function perf
+				GetAvailableSoftwares()
+			}
+		})
+	}
+	// clean global variables after the test
+	AvailableSoftwares = make(map[int]Software)
+	AvailableSoftwaresMux = sync.Mutex{}
 }
 
 func TestGetAvailableSoftwares(t *testing.T) {
@@ -571,6 +668,39 @@ func sortSoftwares(softwares []Software) {
 	})
 }
 
+func BenchmarkTaskFinish(b *testing.B) {
+	benches := []struct {
+		name            string
+		status          string
+		startMessage    string
+		finalizeMessage string
+	}{
+		{
+			name:            "Finish task with empty initial message",
+			status:          "running",
+			startMessage:    "",
+			finalizeMessage: "Task completed successfully",
+		},
+		{
+			name:            "Finish already finished task",
+			status:          "finished",
+			startMessage:    "Task already done",
+			finalizeMessage: "Attempting to finish again",
+		},
+	}
+	for _, bench := range benches {
+		b.Run(bench.name, func(b *testing.B) {
+			for b.Loop() {
+				task := &Task{
+					Status:  bench.status,
+					Message: bench.startMessage,
+				}
+				task.Finish(bench.finalizeMessage)
+			}
+		})
+	}
+}
+
 func TestTaskFinish(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -618,6 +748,47 @@ func TestTaskFinish(t *testing.T) {
 			}
 		})
 	}
+}
+
+func BenchmarkNewTask(b *testing.B) {
+	benches := []struct {
+		name     string
+		data     interface{}
+		appID    int
+		taskID   string
+		taskType string
+	}{
+		{
+			name:     "New task with nil data",
+			data:     nil,
+			appID:    1001,
+			taskID:   "task1",
+			taskType: "download",
+		},
+		{
+			name:     "New task with map data",
+			data:     map[string]interface{}{"key": "value"},
+			appID:    2000,
+			taskID:   "task2",
+			taskType: "upload",
+		},
+		{
+			name:     "New task with slice data",
+			data:     []string{"item1", "item2"},
+			appID:    3000,
+			taskID:   "task3",
+			taskType: "process",
+		},
+	}
+
+	for _, bench := range benches {
+		b.Run(bench.name, func(b *testing.B) {
+			for b.Loop() {
+				NewTask(bench.data, bench.appID, bench.taskID, bench.taskType)
+			}
+		})
+	}
+
 }
 
 func TestNewTask(t *testing.T) {
