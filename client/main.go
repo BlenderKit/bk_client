@@ -1044,113 +1044,145 @@ func doAssetSearch(data SearchTaskData, taskUUID string) {
 	}
 }
 
-// Parse thumbnails on single asset
-func parseThumbnailsOnAsset(result Asset, index int, appID int, tempDir, addonVersion string, blenderVersion *BlenderVersionStruct) (*Task, *Task, []*Task, []*Task) {
-	useWebp := false
-	if result.WebpGeneratedTimestamp > 0 {
-		useWebp = true
+// Check if webp is supported on Blender version. We support it from Blender 3.4 onwards.
+func isWebpSupported(asset Asset, blenderVersion *BlenderVersionStruct) bool {
+	if blenderVersion == nil {
+		return false
 	}
-	if blenderVersion.Major < 3 || (blenderVersion.Major == 3 && blenderVersion.Minor < 4) {
-		useWebp = false
+	if asset.WebpGeneratedTimestamp <= 0 {
+		return false
 	}
+	if blenderVersion.Major < 3 {
+		return false
+	}
+	if blenderVersion.Major == 3 && blenderVersion.Minor < 4 {
+		return false
+	}
+	return true
+}
 
-	var smallThumbURL, fullThumbURL string
+// Get small thumbnail URL, these pictures are used in the search bar.
+func getSmallThumbnailURL(asset Asset, useWebp bool) string {
 	if useWebp {
-		smallThumbURL = result.ThumbnailSmallURLWebp
-		if result.AssetType == "hdr" {
-			fullThumbURL = result.ThumbnailLargeURLNonsquaredWebp
-		} else {
-			fullThumbURL = result.ThumbnailMiddleURLWebp
+		return asset.ThumbnailSmallURLWebp
+	}
+	return asset.ThumbnailSmallURL
+}
+
+// Get full thumbnail URL, these pictures are used in popups on mouse hover.
+// HDRs requires panoramic format, other asset type goes with square.
+func getFullThumbnailURL(asset Asset, useWebp bool) string {
+	if asset.AssetType == "hdr" {
+		if useWebp {
+			return asset.ThumbnailLargeURLNonsquaredWebp
 		}
-	} else {
-		smallThumbURL = result.ThumbnailSmallURL
-		if result.AssetType == "hdr" {
-			fullThumbURL = result.ThumbnailLargeURLNonsquared
-		} else {
-			fullThumbURL = result.ThumbnailMiddleURL
-		}
+		return asset.ThumbnailLargeURLNonsquared
 	}
 
-	// SMALL THUMBNAIL
-	smallImgName, smallImgNameErr := ExtractFilenameFromURL(smallThumbURL)
-	smallImgPath := filepath.Join(tempDir, smallImgName)
-	smallTaskData := DownloadThumbnailData{
+	if useWebp {
+		return asset.ThumbnailMiddleURLWebp
+	}
+	return asset.ThumbnailMiddleURL
+}
+
+func createThumbnailDownloadTask(assetBaseID string, assetDisplayName string, index int, thumbnailURL string, thumbnailType string, appID int, addonVersion string, tempDir string) *Task {
+	switch thumbnailType {
+	case "small":
+	case "full":
+	case "photo_full":
+	case "wire_full":
+	default:
+		BKLog.Printf("createThumbnailDownloadTask(): unsupported thumbnailType:%s for asset %s", thumbnailType, assetDisplayName)
+		return nil
+	}
+
+	thumbnailName, thumbnailNameErr := ExtractFilenameFromURL(thumbnailURL)
+	thumbnailPath := filepath.Join(tempDir, thumbnailName)
+	taskData := DownloadThumbnailData{
 		AddonVersion:  addonVersion,
-		ThumbnailType: "small",
-		ImagePath:     smallImgPath,
-		ImageURL:      smallThumbURL,
-		AssetBaseID:   result.AssetBaseID,
+		ThumbnailType: thumbnailType,
+		ImagePath:     thumbnailPath,
+		ImageURL:      thumbnailURL,
+		AssetBaseID:   assetBaseID,
 		Index:         index,
 	}
-	smallTaskUUID := uuid.New().String()
-	smallThumbnailTask := NewTask(smallTaskData, appID, smallTaskUUID, "thumbnail_download")
-	if smallImgNameErr != nil {
-		smallThumbnailTask.Error = fmt.Errorf("error extracting filename from URL: %v, for asset: %s ", smallImgNameErr, result.DisplayName)
+	taskUUID := uuid.New().String()
+	thumbnailTask := NewTask(taskData, appID, taskUUID, "thumbnail_download")
+	if thumbnailNameErr != nil {
+		thumbnailTask.Error = fmt.Errorf("error extracting filename from URL: %v for asset %s", thumbnailNameErr, assetDisplayName)
 	}
 
-	// FULL THUMBNAIL
-	fullImgName, fullImgNameErr := ExtractFilenameFromURL(fullThumbURL)
-	fullImgPath := filepath.Join(tempDir, fullImgName)
-	fullTaskData := DownloadThumbnailData{
-		AddonVersion:  addonVersion,
-		ThumbnailType: "full",
-		ImagePath:     fullImgPath,
-		ImageURL:      fullThumbURL,
-		AssetBaseID:   result.AssetBaseID,
-		Index:         index,
-	}
-	fullTaskUUID := uuid.New().String()
-	fullThumbnailTask := NewTask(fullTaskData, appID, fullTaskUUID, "thumbnail_download")
-	if fullImgNameErr != nil {
-		fullThumbnailTask.Error = fmt.Errorf("error extracting filename from URL: %v, for asset: %s", fullImgNameErr, result.DisplayName)
-	}
+	return thumbnailTask
+}
 
-	// FULL PHOTOS & FULL WIRES
+// Parse thumbnails on single asset.
+func parseThumbnailsOnAsset(result Asset, index int, appID int, tempDir, addonVersion string, blenderVersion *BlenderVersionStruct) (*Task, *Task, []*Task, []*Task) {
+	var smallThumbnailTask *Task
+	var fullThumbnailTask *Task
 	var fullPhotoTasks []*Task
-	var fullWireThumbnailTasks []*Task
-	for i, file := range result.Files {
-		fmt.Printf("> result.Files->file[%d]: %v\n", i, file)
+	var fullWireTasks []*Task
+
+	for _, file := range result.Files {
 		var thumbnailType string
-		var targetTasks *[]*Task
+		var task *Task
 		switch file.FileType {
-		case "photo_thumbnail":
+		case "thumbnail": // We download thumbnail in 2 sizes...
+			useWebp := isWebpSupported(result, blenderVersion)
+			// SMALL THUMBNAIL
+			smallThumbURL := getSmallThumbnailURL(result, useWebp)
+			smallThumbnailTask = createThumbnailDownloadTask(
+				result.AssetBaseID,
+				result.DisplayName,
+				index,
+				smallThumbURL,
+				"small",
+				appID,
+				addonVersion,
+				tempDir,
+			)
+			// FULL THUMBNAIL
+			fullThumbURL := getFullThumbnailURL(result, useWebp)
+			fullThumbnailTask = createThumbnailDownloadTask(
+				result.AssetBaseID,
+				result.DisplayName,
+				index,
+				fullThumbURL,
+				"full",
+				appID,
+				addonVersion,
+				tempDir,
+			)
+		case "photo_thumbnail": // TODO: also use webp?
 			thumbnailType = "photo_full"
-			targetTasks = &fullPhotoTasks
-		case "wire_thumbnail":
+			task = createThumbnailDownloadTask(
+				result.AssetBaseID,
+				result.DisplayName,
+				index, // previously used i as index, but I think it is a bug
+				file.ThumbnailMiddleURL,
+				thumbnailType,
+				appID,
+				addonVersion,
+				tempDir)
+			fullPhotoTasks = append(fullPhotoTasks, task)
+		case "wire_thumbnail": // TODO: also use webp?
 			thumbnailType = "wire_full"
-			targetTasks = &fullWireThumbnailTasks
-		default:
-			BKLog.Printf("parseThumbnails: skipping fileType=%s for %s", file.FileType, result.DisplayName)
+			task = createThumbnailDownloadTask(
+				result.AssetBaseID,
+				result.DisplayName,
+				index, // previously used i as index, but I think it is a bug
+				file.ThumbnailMiddleURL,
+				thumbnailType,
+				appID,
+				addonVersion,
+				tempDir)
+			fullWireTasks = append(fullWireTasks, task)
+		default: //skip blend, prxc...
 			continue
 		}
-
-		if file.ThumbnailMiddleURL == "" {
-			BKLog.Printf("Missing %s.ThumbnailMiddleURL for asset: %s", file.FileType, result.DisplayName)
-			continue
-		}
-		fullThumbURL := file.ThumbnailMiddleURL
-
-		fullThumbnailName, fullThumbnailNameErr := ExtractFilenameFromURL(fullThumbURL)
-		fullThumbnailPath := filepath.Join(tempDir, fullThumbnailName)
-		fullThumbnailTaskData := DownloadThumbnailData{
-			AddonVersion:  addonVersion,
-			ThumbnailType: thumbnailType,
-			ImagePath:     fullThumbnailPath,
-			ImageURL:      fullThumbURL,
-			AssetBaseID:   result.AssetBaseID,
-			Index:         i,
-		}
-		fullThumbnailTaskUUID := uuid.New().String()
-		fullThumbnailTask := NewTask(fullThumbnailTaskData, appID, fullThumbnailTaskUUID, "thumbnail_download")
-		if fullThumbnailNameErr != nil {
-			fullThumbnailTask.Error = fmt.Errorf("error extracting filename from URL: %v, for asset: %s", fullThumbnailNameErr, result.DisplayName)
-		}
-
 		BKLog.Printf("parseThumbnails: queued %s for %s", file.FileType, result.DisplayName)
-		*targetTasks = append(*targetTasks, fullThumbnailTask)
 	}
 
-	return smallThumbnailTask, fullThumbnailTask, fullPhotoTasks, fullWireThumbnailTasks
+	return smallThumbnailTask, fullThumbnailTask, fullPhotoTasks, fullWireTasks
 }
 
 // Parse thumbnails for all assets in SearchResults and schedule their download.
