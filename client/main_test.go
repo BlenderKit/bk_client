@@ -1161,3 +1161,179 @@ func BenchmarkReportHandler(b *testing.B) {
 	}
 	BKLog = log.New(os.Stdout, "⬡  ", log.LstdFlags|log.Lmicroseconds)
 }
+
+func Test_isWebpSupported(t *testing.T) {
+	tests := []struct {
+		name           string
+		asset          Asset
+		blenderVersion *BlenderVersionStruct
+		want           bool
+	}{
+		{
+			name: "Webp is not generated",
+			want: false,
+			asset: Asset{
+				WebpGeneratedTimestamp: 0,
+			},
+			blenderVersion: &BlenderVersionStruct{
+				Major: 5,
+				Minor: 1,
+				Patch: 1,
+			},
+		},
+		{
+			name: "Webp is generated and Blender supports",
+			want: true,
+			asset: Asset{
+				WebpGeneratedTimestamp: 1787831335,
+			},
+			blenderVersion: &BlenderVersionStruct{
+				Major: 5,
+				Minor: 1,
+				Patch: 1,
+			},
+		},
+		{
+			name: "Webp is generated, Blender does not support",
+			want: false,
+			asset: Asset{
+				WebpGeneratedTimestamp: 1787831335,
+			},
+			blenderVersion: &BlenderVersionStruct{
+				Major: 3,
+				Minor: 3,
+				Patch: 1,
+			},
+		},
+		{
+			name: "Webp is generated, blenderVersion is nil",
+			want: false,
+			asset: Asset{
+				WebpGeneratedTimestamp: 1787831335,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := isWebpSupported(tt.asset, tt.blenderVersion)
+			if got != tt.want {
+				t.Errorf("isWebpSupported() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_getFullThumbnailURL(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		asset   Asset
+		useWebp bool
+		want    string
+	}{
+		{
+			name:    "HDR use webp",
+			want:    "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=1784732123",
+			useWebp: true,
+			asset: Asset{
+				AssetType:                        "hdr",
+				ThumbnailSmallURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg",
+				ThumbnailMiddleURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
+				ThumbnailLargeURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg",
+				ThumbnailXlargeURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg",
+				ThumbnailSmallURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg",
+				ThumbnailMiddleURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg",
+				ThumbnailLargeURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
+				ThumbnailXlargeURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg",
+				ThumbnailSmallURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailMiddleURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailLargeURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailXlargeURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailSmallURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg.webp?webp_generated=1784732123",
+				ThumbnailMiddleURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg.webp?webp_generated=1784732123",
+				ThumbnailLargeURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=1784732123",
+				ThumbnailXlargeURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg.webp?webp_generated=1784732123",
+			},
+		},
+		{
+			name:    "HDR no webp",
+			want:    "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
+			useWebp: false,
+			asset: Asset{
+				AssetType:                        "hdr",
+				ThumbnailSmallURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg",
+				ThumbnailMiddleURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
+				ThumbnailLargeURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg",
+				ThumbnailXlargeURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg",
+				ThumbnailSmallURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg",
+				ThumbnailMiddleURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg",
+				ThumbnailLargeURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
+				ThumbnailXlargeURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg",
+				ThumbnailSmallURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailMiddleURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailLargeURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailXlargeURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailSmallURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg.webp?webp_generated=1784732123",
+				ThumbnailMiddleURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg.webp?webp_generated=1784732123",
+				ThumbnailLargeURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=1784732123",
+				ThumbnailXlargeURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg.webp?webp_generated=1784732123",
+			},
+		},
+		{
+			name:    "Model use webp",
+			want:    "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+			useWebp: true,
+			asset: Asset{
+				AssetType:                        "model",
+				ThumbnailSmallURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg",
+				ThumbnailMiddleURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
+				ThumbnailLargeURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg",
+				ThumbnailXlargeURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg",
+				ThumbnailSmallURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg",
+				ThumbnailMiddleURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg",
+				ThumbnailLargeURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
+				ThumbnailXlargeURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg",
+				ThumbnailSmallURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailMiddleURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailLargeURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailXlargeURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailSmallURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg.webp?webp_generated=1784732123",
+				ThumbnailMiddleURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg.webp?webp_generated=1784732123",
+				ThumbnailLargeURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=1784732123",
+				ThumbnailXlargeURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg.webp?webp_generated=1784732123",
+			},
+		},
+		{
+			name:    "Printable no webp",
+			want:    "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
+			useWebp: false,
+			asset: Asset{
+				AssetType:                        "printable",
+				ThumbnailSmallURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg",
+				ThumbnailMiddleURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
+				ThumbnailLargeURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg",
+				ThumbnailXlargeURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg",
+				ThumbnailSmallURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg",
+				ThumbnailMiddleURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg",
+				ThumbnailLargeURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
+				ThumbnailXlargeURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg",
+				ThumbnailSmallURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailMiddleURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailLargeURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailXlargeURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailSmallURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg.webp?webp_generated=1784732123",
+				ThumbnailMiddleURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg.webp?webp_generated=1784732123",
+				ThumbnailLargeURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=1784732123",
+				ThumbnailXlargeURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg.webp?webp_generated=1784732123",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := getFullThumbnailURL(tt.asset, tt.useWebp)
+			if got != tt.want {
+				t.Errorf("getFullThumbnailURL() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
