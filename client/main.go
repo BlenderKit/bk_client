@@ -1084,7 +1084,7 @@ func getFullThumbnailURL(asset Asset, useWebp bool) string {
 	return asset.ThumbnailMiddleURL
 }
 
-func createThumbnailDownloadTask(assetBaseID string, assetDisplayName string, index int, thumbnailURL string, thumbnailType string, appID int, addonVersion string, tempDir string) *Task {
+func createThumbnailDownloadTask(assetBaseId string, assetDisplayName string, index int, thumbnailUrl string, thumbnailType string, appId int, addonVersion string, tempDir string) *Task {
 	switch thumbnailType {
 	case "small":
 	case "full":
@@ -1095,18 +1095,18 @@ func createThumbnailDownloadTask(assetBaseID string, assetDisplayName string, in
 		return nil
 	}
 
-	thumbnailName, thumbnailNameErr := ExtractFilenameFromURL(thumbnailURL)
+	thumbnailName, thumbnailNameErr := ExtractFilenameFromURL(thumbnailUrl)
 	thumbnailPath := filepath.Join(tempDir, thumbnailName)
 	taskData := DownloadThumbnailData{
 		AddonVersion:  addonVersion,
 		ThumbnailType: thumbnailType,
 		ImagePath:     thumbnailPath,
-		ImageURL:      thumbnailURL,
-		AssetBaseID:   assetBaseID,
+		ImageURL:      thumbnailUrl,
+		AssetBaseID:   assetBaseId,
 		Index:         index,
 	}
-	taskUUID := uuid.New().String()
-	thumbnailTask := NewTask(taskData, appID, taskUUID, "thumbnail_download")
+	taskUuid := uuid.New().String()
+	thumbnailTask := NewTask(taskData, appId, taskUuid, "thumbnail_download")
 	if thumbnailNameErr != nil {
 		thumbnailTask.Error = fmt.Errorf("error extracting filename from URL: %v for asset %s", thumbnailNameErr, assetDisplayName)
 	}

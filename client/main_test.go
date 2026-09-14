@@ -1337,3 +1337,200 @@ func Test_getFullThumbnailURL(t *testing.T) {
 		})
 	}
 }
+
+func Test_createThumbnailDownloadTask(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		assetBaseId      string
+		assetDisplayName string
+		index            int
+		thumbnailUrl     string
+		thumbnailType    string
+		appId            int
+		addonVersion     string
+		tempDir          string
+		want             *Task
+	}{
+		{ // https://www.blendkit.com/api/v1/assets/c2973368-9754-4b63-8e37-2c655de7fe4a/
+			name:             "Small PNG",
+			assetBaseId:      "839f9e10-4a5a-4831-a4cd-638911339c83",
+			assetDisplayName: "Kittenrial",
+			index:            1,
+			thumbnailUrl:     "https://public.blenderkit.com/thumbnails/assets/c297336897544b638e372c655de7fe4a/files/thumbnail_20e8d297-9f3b-4073-b6a7-5cd8348518a5.png.256x256_q85_crop-,.png",
+			thumbnailType:    "small",
+			appId:            1111,
+			addonVersion:     "3.21.1",
+			tempDir:          "/tmp/blendkit/assets",
+			want: &Task{
+				Data: DownloadThumbnailData{
+					AddonVersion:  "3.21.1",
+					ThumbnailType: "small",
+					ImagePath:     "/tmp/blendkit/assets/thumbnail_20e8d297-9f3b-4073-b6a7-5cd8348518a5.png.256x256_q85_crop-%2C.png",
+					ImageURL:      "https://public.blenderkit.com/thumbnails/assets/c297336897544b638e372c655de7fe4a/files/thumbnail_20e8d297-9f3b-4073-b6a7-5cd8348518a5.png.256x256_q85_crop-,.png",
+					AssetBaseID:   "839f9e10-4a5a-4831-a4cd-638911339c83",
+					Index:         1,
+				},
+				AppID:    1111,
+				TaskType: "thumbnail_download",
+				Error:    nil,
+			},
+		},
+		{
+			name:             "Small webp",
+			assetBaseId:      "839f9e10-4a5a-4831-a4cd-638911339c83",
+			assetDisplayName: "Kittenrial",
+			index:            2,
+			thumbnailUrl:     "https://public.blenderkit.com/thumbnails/assets/c297336897544b638e372c655de7fe4a/files/thumbnail_20e8d297-9f3b-4073-b6a7-5cd8348518a5.png.256x256_q85_crop-,.png.webp?webp_generated=1766466225",
+			thumbnailType:    "small",
+			appId:            2222,
+			addonVersion:     "3.21.2",
+			tempDir:          "/tmp/blendkit/assets",
+			want: &Task{
+				Data: DownloadThumbnailData{
+					AddonVersion:  "3.21.2",
+					ThumbnailType: "small",
+					ImagePath:     "/tmp/blendkit/assets/thumbnail_20e8d297-9f3b-4073-b6a7-5cd8348518a5.png.256x256_q85_crop-%2C.png.webp",
+					ImageURL:      "https://public.blenderkit.com/thumbnails/assets/c297336897544b638e372c655de7fe4a/files/thumbnail_20e8d297-9f3b-4073-b6a7-5cd8348518a5.png.256x256_q85_crop-,.png.webp?webp_generated=1766466225",
+					AssetBaseID:   "839f9e10-4a5a-4831-a4cd-638911339c83",
+					Index:         2,
+				},
+				AppID:    2222,
+				TaskType: "thumbnail_download",
+				Error:    nil,
+			},
+		},
+		{
+			name:             "Full png",
+			assetBaseId:      "839f9e10-4a5a-4831-a4cd-638911339c83",
+			assetDisplayName: "Kittenrial",
+			index:            3,
+			thumbnailUrl:     "https://public.blenderkit.com/thumbnails/assets/c297336897544b638e372c655de7fe4a/files/thumbnail_20e8d297-9f3b-4073-b6a7-5cd8348518a5.png.1024x1024_q85_crop-,.png",
+			thumbnailType:    "full",
+			appId:            3333,
+			addonVersion:     "3.21.3",
+			tempDir:          "/tmp/blendkit/assets",
+			want: &Task{
+				Data: DownloadThumbnailData{
+					AddonVersion:  "3.21.3",
+					ThumbnailType: "full",
+					ImagePath:     "/tmp/blendkit/assets/thumbnail_20e8d297-9f3b-4073-b6a7-5cd8348518a5.png.1024x1024_q85_crop-%2C.png",
+					ImageURL:      "https://public.blenderkit.com/thumbnails/assets/c297336897544b638e372c655de7fe4a/files/thumbnail_20e8d297-9f3b-4073-b6a7-5cd8348518a5.png.1024x1024_q85_crop-,.png",
+					AssetBaseID:   "839f9e10-4a5a-4831-a4cd-638911339c83",
+					Index:         3,
+				},
+				AppID:    3333,
+				TaskType: "thumbnail_download",
+				Error:    nil,
+			},
+		},
+		{
+			name:             "Full webp",
+			assetBaseId:      "839f9e10-4a5a-4831-a4cd-638911339c83",
+			assetDisplayName: "Kittenrial",
+			index:            4,
+			thumbnailUrl:     "https://public.blenderkit.com/thumbnails/assets/c297336897544b638e372c655de7fe4a/files/thumbnail_20e8d297-9f3b-4073-b6a7-5cd8348518a5.png.1024x1024_q85_crop-,.png.webp?webp_generated=1766466225",
+			thumbnailType:    "full",
+			appId:            4444,
+			addonVersion:     "3.21.4",
+			tempDir:          "/tmp/blendkit/assets",
+			want: &Task{
+				Data: DownloadThumbnailData{
+					AddonVersion:  "3.21.4",
+					ThumbnailType: "full",
+					ImagePath:     "/tmp/blendkit/assets/thumbnail_20e8d297-9f3b-4073-b6a7-5cd8348518a5.png.1024x1024_q85_crop-%2C.png.webp",
+					ImageURL:      "https://public.blenderkit.com/thumbnails/assets/c297336897544b638e372c655de7fe4a/files/thumbnail_20e8d297-9f3b-4073-b6a7-5cd8348518a5.png.1024x1024_q85_crop-,.png.webp?webp_generated=1766466225",
+					AssetBaseID:   "839f9e10-4a5a-4831-a4cd-638911339c83",
+					Index:         4,
+				},
+				AppID:    4444,
+				TaskType: "thumbnail_download",
+				Error:    nil,
+			},
+		},
+		{
+			name:             "ExtractFilenameFromURL error is propagated to task error",
+			assetBaseId:      "839f9e10-4a5a-4831-a4cd-638911339c83",
+			assetDisplayName: "Kittenrial",
+			index:            5,
+			thumbnailUrl:     "", // Empty URL so we expect underlying ExtractFilenameFromURL() to fail
+			thumbnailType:    "full",
+			appId:            5555,
+			addonVersion:     "3.21.5",
+			tempDir:          "/tmp/blendkit/assets",
+			want: &Task{
+				Data: DownloadThumbnailData{
+					AddonVersion:  "3.21.5",
+					ThumbnailType: "full",
+					ImagePath:     "/tmp/blendkit/assets",
+					ImageURL:      "",
+					AssetBaseID:   "839f9e10-4a5a-4831-a4cd-638911339c83",
+					Index:         5,
+				},
+				AppID:    5555,
+				TaskType: "thumbnail_download",
+				Error:    fmt.Errorf("error extracting filename from URL: empty URL for asset Kittenrial"),
+			},
+		},
+		{
+			name:             "Unsupported thumbnailType is rejected",
+			assetBaseId:      "839f9e10-4a5a-4831-a4cd-638911339c83",
+			assetDisplayName: "Kittenrial",
+			index:            6,
+			thumbnailUrl:     "", // Empty URL so we expect underlying ExtractFilenameFromURL() to fail
+			thumbnailType:    "photo_small",
+			appId:            6666,
+			addonVersion:     "3.21.6",
+			tempDir:          "/tmp/blendkit/assets",
+			want:             nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := createThumbnailDownloadTask(tt.assetBaseId, tt.assetDisplayName, tt.index, tt.thumbnailUrl, tt.thumbnailType, tt.appId, tt.addonVersion, tt.tempDir)
+
+			if tt.want == nil {
+				if got != tt.want {
+					t.Errorf("createThumbnailDownloadTask()->task = %v, want %v", got, tt.want)
+				}
+				return
+			}
+
+			if got.AppID != tt.want.AppID {
+				t.Errorf("createThumbnailDownloadTask()->task.AppID = %v, want %v", got.AppID, tt.want.AppID)
+			}
+			if got.TaskType != tt.want.TaskType {
+				t.Errorf("createThumbnailDownloadTask()->task.TaskType = %v, want %v", got.TaskType, tt.want.TaskType)
+			}
+			if tt.want.Error != nil {
+				if got.Error.Error() != tt.want.Error.Error() {
+					t.Errorf("createThumbnailDownloadTask()->task.Error = %v, want %v", got.Error, tt.want.Error)
+				}
+			} else {
+				if got.Error != nil {
+					t.Errorf("createThumbnailDownloadTask()->task.Error = %v, want %v", got.Error, tt.want.Error)
+				}
+			}
+
+			// TEST TASK.DATA
+			if got.Data.(DownloadThumbnailData).AddonVersion != tt.want.Data.(DownloadThumbnailData).AddonVersion {
+				t.Errorf("createThumbnailDownloadTask()->task.Data.AddonVersion = %v, want %v", got.Data.(DownloadThumbnailData).AddonVersion, tt.want.Data.(DownloadThumbnailData).AddonVersion)
+			}
+			if got.Data.(DownloadThumbnailData).ThumbnailType != tt.want.Data.(DownloadThumbnailData).ThumbnailType {
+				t.Errorf("createThumbnailDownloadTask()->task.Data.ThumbnailType = %v, want %v", got.Data.(DownloadThumbnailData).ThumbnailType, tt.want.Data.(DownloadThumbnailData).ThumbnailType)
+			}
+			if got.Data.(DownloadThumbnailData).ImagePath != tt.want.Data.(DownloadThumbnailData).ImagePath {
+				t.Errorf("createThumbnailDownloadTask()->task.Data.ImagePath = %v, want %v", got.Data.(DownloadThumbnailData).ImagePath, tt.want.Data.(DownloadThumbnailData).ImagePath)
+			}
+			if got.Data.(DownloadThumbnailData).ImageURL != tt.want.Data.(DownloadThumbnailData).ImageURL {
+				t.Errorf("createThumbnailDownloadTask()->task.Data.ImageURL = %v, want %v", got.Data.(DownloadThumbnailData).ImageURL, tt.want.Data.(DownloadThumbnailData).ImageURL)
+			}
+			if got.Data.(DownloadThumbnailData).AssetBaseID != tt.want.Data.(DownloadThumbnailData).AssetBaseID {
+				t.Errorf("createThumbnailDownloadTask()->task.Data.AssetBaseID = %v, want %v", got.Data.(DownloadThumbnailData).AssetBaseID, tt.want.Data.(DownloadThumbnailData).AssetBaseID)
+			}
+			if got.Data.(DownloadThumbnailData).Index != tt.want.Data.(DownloadThumbnailData).Index {
+				t.Errorf("createThumbnailDownloadTask()->task.Data.Index = %v, want %v", got.Data.(DownloadThumbnailData).Index, tt.want.Data.(DownloadThumbnailData).Index)
+			}
+		})
+	}
+}
