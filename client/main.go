@@ -1115,48 +1115,46 @@ func createThumbnailDownloadTask(assetBaseId string, assetDisplayName string, in
 }
 
 // Parse thumbnails on single asset.
-func parseThumbnailsOnAsset(result Asset, index int, appID int, tempDir, addonVersion string, blenderVersion *BlenderVersionStruct) (*Task, *Task, []*Task, []*Task) {
+func parseThumbnailsOnAsset(asset Asset, index int, appID int, tempDir, addonVersion string, blenderVersion *BlenderVersionStruct) (*Task, *Task, []*Task, []*Task) {
 	var smallThumbnailTask *Task
 	var fullThumbnailTask *Task
 	var fullPhotoTasks []*Task
 	var fullWireTasks []*Task
 
-	for _, file := range result.Files {
+	for _, file := range asset.Files {
 		var thumbnailType string
 		var task *Task
 		switch file.FileType {
 		case "thumbnail": // We download thumbnail in 2 sizes...
-			useWebp := isWebpSupported(result, blenderVersion)
+			useWebp := isWebpSupported(asset, blenderVersion)
 			// SMALL THUMBNAIL
-			smallThumbURL := getSmallThumbnailURL(result, useWebp)
+			smallThumbURL := getSmallThumbnailURL(asset, useWebp)
 			smallThumbnailTask = createThumbnailDownloadTask(
-				result.AssetBaseID,
-				result.DisplayName,
+				asset.AssetBaseID,
+				asset.DisplayName,
 				index,
 				smallThumbURL,
 				"small",
 				appID,
 				addonVersion,
-				tempDir,
-			)
+				tempDir)
 			// FULL THUMBNAIL
-			fullThumbURL := getFullThumbnailURL(result, useWebp)
+			fullThumbURL := getFullThumbnailURL(asset, useWebp)
 			fullThumbnailTask = createThumbnailDownloadTask(
-				result.AssetBaseID,
-				result.DisplayName,
+				asset.AssetBaseID,
+				asset.DisplayName,
 				index,
 				fullThumbURL,
 				"full",
 				appID,
 				addonVersion,
-				tempDir,
-			)
+				tempDir)
 		case "photo_thumbnail": // TODO: also use webp?
 			thumbnailType = "photo_full"
 			task = createThumbnailDownloadTask(
-				result.AssetBaseID,
-				result.DisplayName,
-				index, // previously used i as index, but I think it is a bug
+				asset.AssetBaseID,
+				asset.DisplayName,
+				index,
 				file.ThumbnailMiddleURL,
 				thumbnailType,
 				appID,
@@ -1166,9 +1164,9 @@ func parseThumbnailsOnAsset(result Asset, index int, appID int, tempDir, addonVe
 		case "wire_thumbnail": // TODO: also use webp?
 			thumbnailType = "wire_full"
 			task = createThumbnailDownloadTask(
-				result.AssetBaseID,
-				result.DisplayName,
-				index, // previously used i as index, but I think it is a bug
+				asset.AssetBaseID,
+				asset.DisplayName,
+				index,
 				file.ThumbnailMiddleURL,
 				thumbnailType,
 				appID,
@@ -1178,7 +1176,6 @@ func parseThumbnailsOnAsset(result Asset, index int, appID int, tempDir, addonVe
 		default: //skip blend, prxc...
 			continue
 		}
-		BKLog.Printf("parseThumbnails: queued %s for %s", file.FileType, result.DisplayName)
 	}
 
 	return smallThumbnailTask, fullThumbnailTask, fullPhotoTasks, fullWireTasks
