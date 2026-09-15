@@ -1174,8 +1174,8 @@ func Test_parseThumbnailsOnAsset(t *testing.T) {
 		blenderVersion *BlenderVersionStruct
 		want1          *Task
 		want2          *Task
-		want3          []*Task
-		want4          []*Task
+		want3          *Task
+		want4          *Task
 	}{
 		{ // https://www.blendkit.com/api/v1/assets/4f3f607d-4210-4b0a-bbaa-906b8e2a1fed/
 			name: "WebP availabe & supported",
@@ -1234,8 +1234,8 @@ func Test_parseThumbnailsOnAsset(t *testing.T) {
 				AppID:    1111,
 				TaskType: "thumbnail_download",
 			},
-			want3: []*Task{},
-			want4: []*Task{},
+			want3: nil,
+			want4: nil,
 		},
 		{ // https://www.blendkit.com/api/v1/assets/4f3f607d-4210-4b0a-bbaa-906b8e2a1fed/
 			name: "WebP not available",
@@ -1294,8 +1294,8 @@ func Test_parseThumbnailsOnAsset(t *testing.T) {
 				AppID:    1111,
 				TaskType: "thumbnail_download",
 			},
-			want3: []*Task{},
-			want4: []*Task{},
+			want3: nil,
+			want4: nil,
 		},
 		{ // https://www.blendkit.com/api/v1/assets/4f3f607d-4210-4b0a-bbaa-906b8e2a1fed/
 			name: "Photo & wire thumbs available",
@@ -1364,33 +1364,30 @@ func Test_parseThumbnailsOnAsset(t *testing.T) {
 				AppID:    1111,
 				TaskType: "thumbnail_download",
 			},
-			want3: []*Task{
-				{
-					Data: DownloadThumbnailData{
-						AddonVersion:  "3.21.5",
-						ThumbnailType: "photo_full",
-						ImagePath:     "/tmp/bk_client/photo_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-%2C.jpg",
-						ImageURL:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/photo_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg",
-						AssetBaseID:   "975dcf32-d010-4a9a-b093-4d6966175590",
-						Index:         5,
-					},
-					AppID:    1111,
-					TaskType: "thumbnail_download",
+			want3: &Task{
+				Data: DownloadThumbnailData{
+					AddonVersion:  "3.21.5",
+					ThumbnailType: "photo_full",
+					ImagePath:     "/tmp/bk_client/photo_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-%2C.jpg",
+					ImageURL:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/photo_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg",
+					AssetBaseID:   "975dcf32-d010-4a9a-b093-4d6966175590",
+					Index:         5,
 				},
+				AppID:    1111,
+				TaskType: "thumbnail_download",
 			},
-			want4: []*Task{
-				{
-					Data: DownloadThumbnailData{
-						AddonVersion:  "3.21.5",
-						ThumbnailType: "wire_full",
-						ImagePath:     "/tmp/bk_client/wire_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-%2C.jpg",
-						ImageURL:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/wire_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg",
-						AssetBaseID:   "975dcf32-d010-4a9a-b093-4d6966175590",
-						Index:         5,
-					},
-					AppID:    1111,
-					TaskType: "thumbnail_download",
+
+			want4: &Task{
+				Data: DownloadThumbnailData{
+					AddonVersion:  "3.21.5",
+					ThumbnailType: "wire_full",
+					ImagePath:     "/tmp/bk_client/wire_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-%2C.jpg",
+					ImageURL:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/wire_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg",
+					AssetBaseID:   "975dcf32-d010-4a9a-b093-4d6966175590",
+					Index:         5,
 				},
+				AppID:    1111,
+				TaskType: "thumbnail_download",
 			},
 		},
 	}
@@ -1448,10 +1445,9 @@ func Test_parseThumbnailsOnAsset(t *testing.T) {
 		}
 
 		// CHECK PHOTO THUMBNAIL
-		if len(tt.want3) > 0 {
-			_, _, gots, _ := parseThumbnailsOnAsset(tt.asset, tt.index, tt.appID, tt.tempDir, tt.addonVersion, tt.blenderVersion)
-			got := gots[0]
-			want := tt.want3[0]
+		if tt.want3 != nil {
+			_, _, got, _ := parseThumbnailsOnAsset(tt.asset, tt.index, tt.appID, tt.tempDir, tt.addonVersion, tt.blenderVersion)
+			want := tt.want3
 			t.Run(tt.name+"-full_photo-task_basics", func(t *testing.T) {
 				if got.AppID != want.AppID {
 					t.Errorf("parseThumbnailsOnAsset() task.AppID = %v, want %v", got.AppID, want.AppID)
@@ -1474,10 +1470,9 @@ func Test_parseThumbnailsOnAsset(t *testing.T) {
 		}
 
 		// CHECK WIREFRAME THUMBNAIL
-		if len(tt.want4) > 0 {
-			_, _, _, gots := parseThumbnailsOnAsset(tt.asset, tt.index, tt.appID, tt.tempDir, tt.addonVersion, tt.blenderVersion)
-			got := gots[0]
-			want := tt.want4[0]
+		if tt.want4 != nil {
+			_, _, _, got := parseThumbnailsOnAsset(tt.asset, tt.index, tt.appID, tt.tempDir, tt.addonVersion, tt.blenderVersion)
+			want := tt.want4
 			t.Run(tt.name+"-full_wite-task_basics", func(t *testing.T) {
 				if got.AppID != want.AppID {
 					t.Errorf("parseThumbnailsOnAsset() task.AppID = %v, want %v", got.AppID, want.AppID)

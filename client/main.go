@@ -57,9 +57,11 @@ const (
 	// EMOJIS
 	EmoOK            = "✅"
 	EmoCancel        = "⛔"
+	EmoError         = "❌"
 	EmoWarning       = "⚠️ " // Needs space at the end for proper alignment, not sure why.
 	EmoInfo          = "ℹ️ "
-	EmoError         = "❌"
+	EmoDebug         = "🪲"
+	EmoUfo           = "🛸" // Something unexpected has happened.
 	EmoNetwork       = "📡"
 	EmoNewConnection = "🤝"
 	EmoDisconnecting = "👐"
@@ -70,7 +72,6 @@ const (
 	EmoIdentity      = "🆔"
 	EmoUpdate        = "🔜"
 	EmoBKClientJS    = "🌐"
-	EmoDebug         = "🪲"
 
 	// RETURN CODES
 	rcServerStartOtherError           = 40
@@ -1115,17 +1116,19 @@ func createThumbnailDownloadTask(assetBaseId string, assetDisplayName string, in
 }
 
 // Parse thumbnails on single asset.
-func parseThumbnailsOnAsset(asset Asset, index int, appID int, tempDir, addonVersion string, blenderVersion *BlenderVersionStruct) (*Task, *Task, []*Task, []*Task) {
+func parseThumbnailsOnAsset(asset Asset, index int, appID int, tempDir, addonVersion string, blenderVersion *BlenderVersionStruct) (*Task, *Task, *Task, *Task) {
 	var smallThumbnailTask *Task
 	var fullThumbnailTask *Task
-	var fullPhotoTasks []*Task
-	var fullWireTasks []*Task
+	var fullPhotoTask *Task
+	var fullWireTask *Task
 
 	for _, file := range asset.Files {
 		var thumbnailType string
-		var task *Task
 		switch file.FileType {
 		case "thumbnail": // We download thumbnail in 2 sizes...
+			if fullPhotoTask != nil {
+				BKLog.Printf("%s Asset has %s (%s) more than one thumbnail file", EmoUfo, asset.Name, asset.URL)
+			}
 			useWebp := isWebpSupported(asset, blenderVersion)
 			// SMALL THUMBNAIL
 			smallThumbURL := getSmallThumbnailURL(asset, useWebp)
@@ -1150,8 +1153,11 @@ func parseThumbnailsOnAsset(asset Asset, index int, appID int, tempDir, addonVer
 				addonVersion,
 				tempDir)
 		case "photo_thumbnail": // TODO: also use webp?
+			if fullPhotoTask != nil {
+				BKLog.Printf("%s Asset has %s (%s) more than one photo_thumbnail file", EmoUfo, asset.Name, asset.URL)
+			}
 			thumbnailType = "photo_full"
-			task = createThumbnailDownloadTask(
+			fullPhotoTask = createThumbnailDownloadTask(
 				asset.AssetBaseID,
 				asset.DisplayName,
 				index,
@@ -1160,10 +1166,12 @@ func parseThumbnailsOnAsset(asset Asset, index int, appID int, tempDir, addonVer
 				appID,
 				addonVersion,
 				tempDir)
-			fullPhotoTasks = append(fullPhotoTasks, task)
 		case "wire_thumbnail": // TODO: also use webp?
+			if fullWireTask != nil {
+				BKLog.Printf("%s Asset has %s (%s) more than one wire_thumbnail file", EmoUfo, asset.Name, asset.URL)
+			}
 			thumbnailType = "wire_full"
-			task = createThumbnailDownloadTask(
+			fullWireTask = createThumbnailDownloadTask(
 				asset.AssetBaseID,
 				asset.DisplayName,
 				index,
@@ -1172,13 +1180,12 @@ func parseThumbnailsOnAsset(asset Asset, index int, appID int, tempDir, addonVer
 				appID,
 				addonVersion,
 				tempDir)
-			fullWireTasks = append(fullWireTasks, task)
 		default: //skip blend, prxc...
 			continue
 		}
 	}
 
-	return smallThumbnailTask, fullThumbnailTask, fullPhotoTasks, fullWireTasks
+	return smallThumbnailTask, fullThumbnailTask, fullPhotoTask, fullWireTask
 }
 
 // Parse thumbnails for all assets in SearchResults and schedule their download.
@@ -1190,7 +1197,7 @@ func parseThumbnailsFromSearch(searchResults SearchResults, data SearchTaskData)
 		if result.AssetType == "author" {
 			continue // Author results have no thumbnails, skip them
 		}
-		smallThumbTask, fullThumbTask, fullPhotoTasks, fullWireThumbTasks := parseThumbnailsOnAsset(
+		smallThumbTask, fullThumbTask, fullPhotoTask, fullWireThumbTask := parseThumbnailsOnAsset(
 			result,
 			i,
 			data.AppID,
@@ -1198,10 +1205,18 @@ func parseThumbnailsFromSearch(searchResults SearchResults, data SearchTaskData)
 			data.AddonVersion,
 			blenderVersion,
 		)
-		smallThumbsTasks = append(smallThumbsTasks, smallThumbTask)
-		fullThumbsTasks = append(fullThumbsTasks, fullThumbTask)
-		fullPhotoThumbsTasks = append(fullPhotoThumbsTasks, fullPhotoTasks...)
-		fullWireThumbsTasks = append(fullWireThumbsTasks, fullWireThumbTasks...)
+		if smallThumbTask != nil {
+			smallThumbsTasks = append(smallThumbsTasks, smallThumbTask)
+		}
+		if fullThumbTask != nil {
+			fullThumbsTasks = append(fullThumbsTasks, fullThumbTask)
+		}
+		if fullPhotoTask != nil {
+			fullPhotoThumbsTasks = append(fullPhotoThumbsTasks, fullPhotoTask)
+		}
+		if fullWireThumbTask != nil {
+			fullWireThumbsTasks = append(fullWireThumbsTasks, fullWireThumbTask)
+		}
 	}
 
 	go downloadImageBatch(smallThumbsTasks, true)
