@@ -1045,11 +1045,8 @@ func doAssetSearch(data SearchTaskData, taskUUID string) {
 }
 
 // Check if webp is supported on Blender version. We support it from Blender 3.4 onwards.
-func isWebpSupported(asset Asset, blenderVersion *BlenderVersionStruct) bool {
+func isWebpSupported(blenderVersion *BlenderVersionStruct) bool {
 	if blenderVersion == nil {
-		return false
-	}
-	if asset.WebpGeneratedTimestamp <= 0 {
 		return false
 	}
 	if blenderVersion.Major < 3 {
@@ -1062,27 +1059,48 @@ func isWebpSupported(asset Asset, blenderVersion *BlenderVersionStruct) bool {
 }
 
 // Get small thumbnail URL, these pictures are used in the search bar.
-func getSmallThumbnailURL(asset Asset, useWebp bool) string {
-	if useWebp {
-		return asset.ThumbnailSmallURLWebp
+// Return .webp if supported and available.
+func getSmallThumbnailURL(af AssetFile, webpSupported bool) string {
+	webpAvailable := !strings.HasSuffix(af.ThumbnailSmallUrlWebp, "=None")
+	if webpSupported && webpAvailable {
+		return af.ThumbnailSmallUrlWebp
 	}
-	return asset.ThumbnailSmallURL
+	return af.ThumbnailSmallUrl
 }
 
 // Get full thumbnail URL, these pictures are used in popups on mouse hover.
 // HDRs requires panoramic format, other asset type goes with square.
-func getFullThumbnailURL(asset Asset, useWebp bool) string {
-	if asset.AssetType == "hdr" {
-		if useWebp {
-			return asset.ThumbnailLargeURLNonsquaredWebp
+// Return .webp if supported and available.
+func getFullThumbnailURL(af AssetFile, assetType string, webpSupported bool) string {
+	if assetType == "hdr" {
+		webpAvailable := !strings.HasSuffix(af.ThumbnailLargeUrlNonsquaredWebp, "=None")
+		if webpSupported && webpAvailable {
+			return af.ThumbnailLargeUrlNonsquaredWebp
 		}
-		return asset.ThumbnailLargeURLNonsquared
+		return af.ThumbnailLargeUrlNonsquared
 	}
 
-	if useWebp {
-		return asset.ThumbnailMiddleURLWebp
+	webpAvailable := !strings.HasSuffix(af.ThumbnailMiddleUrlWebp, "=None")
+	if webpSupported && webpAvailable {
+		return af.ThumbnailMiddleUrlWebp
 	}
-	return asset.ThumbnailMiddleURL
+	return af.ThumbnailMiddleUrl
+}
+
+func getPhotoThumbnailURL(af AssetFile, webpSupported bool) string {
+	webpAvailable := !strings.HasSuffix(af.ThumbnailMiddleUrlWebp, "=None")
+	if webpSupported && webpAvailable {
+		return af.ThumbnailMiddleUrlWebp
+	}
+	return af.ThumbnailMiddleUrl
+}
+
+func getWireThumbnailURL(af AssetFile, webpSupported bool) string {
+	webpAvailable := !strings.HasSuffix(af.ThumbnailMiddleUrlWebp, "=None")
+	if webpSupported && webpAvailable {
+		return af.ThumbnailMiddleUrlWebp
+	}
+	return af.ThumbnailMiddleUrl
 }
 
 func createThumbnailDownloadTask(assetBaseId string, assetDisplayName string, index int, thumbnailUrl string, thumbnailType string, appId int, addonVersion string, tempDir string) *Task {
@@ -1121,17 +1139,16 @@ func parseThumbnailsOnAsset(asset Asset, index int, appID int, tempDir, addonVer
 	var fullThumbnailTask *Task
 	var fullPhotoTask *Task
 	var fullWireTask *Task
-
-	for _, file := range asset.Files {
+	useWebp := isWebpSupported(blenderVersion)
+	for _, assetFile := range asset.Files {
 		var thumbnailType string
-		switch file.FileType {
+		switch assetFile.FileType {
 		case "thumbnail": // We download thumbnail in 2 sizes...
 			if fullPhotoTask != nil {
 				BKLog.Printf("%s Asset has %s (%s) more than one thumbnail file", EmoUfo, asset.Name, asset.URL)
 			}
-			useWebp := isWebpSupported(asset, blenderVersion)
 			// SMALL THUMBNAIL
-			smallThumbURL := getSmallThumbnailURL(asset, useWebp)
+			smallThumbURL := getSmallThumbnailURL(assetFile, useWebp)
 			smallThumbnailTask = createThumbnailDownloadTask(
 				asset.AssetBaseID,
 				asset.DisplayName,
@@ -1142,7 +1159,7 @@ func parseThumbnailsOnAsset(asset Asset, index int, appID int, tempDir, addonVer
 				addonVersion,
 				tempDir)
 			// FULL THUMBNAIL
-			fullThumbURL := getFullThumbnailURL(asset, useWebp)
+			fullThumbURL := getFullThumbnailURL(assetFile, asset.AssetType, useWebp)
 			fullThumbnailTask = createThumbnailDownloadTask(
 				asset.AssetBaseID,
 				asset.DisplayName,
@@ -1157,11 +1174,12 @@ func parseThumbnailsOnAsset(asset Asset, index int, appID int, tempDir, addonVer
 				BKLog.Printf("%s Asset has %s (%s) more than one photo_thumbnail file", EmoUfo, asset.Name, asset.URL)
 			}
 			thumbnailType = "photo_full"
+			fullPhotoUrl := getPhotoThumbnailURL(assetFile, useWebp)
 			fullPhotoTask = createThumbnailDownloadTask(
 				asset.AssetBaseID,
 				asset.DisplayName,
 				index,
-				file.ThumbnailMiddleURL,
+				fullPhotoUrl, //file.ThumbnailMiddleURL,
 				thumbnailType,
 				appID,
 				addonVersion,
@@ -1171,11 +1189,12 @@ func parseThumbnailsOnAsset(asset Asset, index int, appID int, tempDir, addonVer
 				BKLog.Printf("%s Asset has %s (%s) more than one wire_thumbnail file", EmoUfo, asset.Name, asset.URL)
 			}
 			thumbnailType = "wire_full"
+			fullWireUrl := getWireThumbnailURL(assetFile, useWebp)
 			fullWireTask = createThumbnailDownloadTask(
 				asset.AssetBaseID,
 				asset.DisplayName,
 				index,
-				file.ThumbnailMiddleURL,
+				fullWireUrl, //file.ThumbnailMiddleURL,
 				thumbnailType,
 				appID,
 				addonVersion,

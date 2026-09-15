@@ -1178,26 +1178,26 @@ func Test_parseThumbnailsOnAsset(t *testing.T) {
 		want4          *Task
 	}{
 		{ // https://www.blendkit.com/api/v1/assets/4f3f607d-4210-4b0a-bbaa-906b8e2a1fed/
-			name: "WebP availabe & supported",
+			name: "WebP available & supported",
 			asset: Asset{
-				AssetBaseID:            "975dcf32-d010-4a9a-b093-4d6966175590",
-				DisplayName:            "Triple wall hook",
-				AssetType:              "model",
-				WebpGeneratedTimestamp: 1787831335,
-				ThumbnailSmallURL:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg",
-				ThumbnailSmallURLWebp:  "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg.webp?webp_generated=1766636291",
-				ThumbnailMiddleURL:     "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg",
-				ThumbnailMiddleURLWebp: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg.webp?webp_generated=1766636291",
+				AssetBaseID: "975dcf32-d010-4a9a-b093-4d6966175590",
+				DisplayName: "Triple wall hook",
+				AssetType:   "model",
+				//WebpGeneratedTimestamp: 1787831335,
 				Files: []AssetFile{
 					{
 						FileType:    "blend",
 						DownloadURL: "https://www.blendkit.com/api/v1/downloads/a3c2b935-a394-4b08-a867-260083418d2d/",
 					},
 					{
-						FileType:           "thumbnail",
-						DownloadURL:        "https://www.blendkit.com/api/v1/downloads/478d21f8-dad9-43c2-a99e-e9bbc474399f/",
-						ThumbnailSmallURL:  "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-%2C.jpg",
-						ThumbnailMiddleURL: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-%2C.jpg",
+						FileType:                        "thumbnail",
+						DownloadURL:                     "https://www.blendkit.com/api/v1/downloads/478d21f8-dad9-43c2-a99e-e9bbc474399f/",
+						ThumbnailSmallUrl:               "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg",
+						ThumbnailSmallUrlWebp:           "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg.webp?webp_generated=1766636291",
+						ThumbnailMiddleUrl:              "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg",
+						ThumbnailMiddleUrlWebp:          "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg.webp?webp_generated=1766636291",
+						ThumbnailLargeUrlNonsquared:     "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.1024x1024_q85.jpg",
+						ThumbnailLargeUrlNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.1024x1024_q85.jpg.webp?webp_generated=1766636291",
 					},
 				},
 			},
@@ -1240,24 +1240,24 @@ func Test_parseThumbnailsOnAsset(t *testing.T) {
 		{ // https://www.blendkit.com/api/v1/assets/4f3f607d-4210-4b0a-bbaa-906b8e2a1fed/
 			name: "WebP not available",
 			asset: Asset{
-				AssetBaseID:            "975dcf32-d010-4a9a-b093-4d6966175590",
-				DisplayName:            "Triple wall hook",
-				AssetType:              "model",
-				WebpGeneratedTimestamp: 0,
-				ThumbnailSmallURL:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg",
-				ThumbnailSmallURLWebp:  "",
-				ThumbnailMiddleURL:     "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg",
-				ThumbnailMiddleURLWebp: "",
+				AssetBaseID: "975dcf32-d010-4a9a-b093-4d6966175590",
+				DisplayName: "Triple wall hook",
+				AssetType:   "model",
+				//WebpGeneratedTimestamp: 0,
 				Files: []AssetFile{
 					{
 						FileType:    "blend",
 						DownloadURL: "https://www.blendkit.com/api/v1/downloads/a3c2b935-a394-4b08-a867-260083418d2d/",
 					},
 					{
-						FileType:           "thumbnail",
-						DownloadURL:        "https://www.blendkit.com/api/v1/downloads/478d21f8-dad9-43c2-a99e-e9bbc474399f/",
-						ThumbnailSmallURL:  "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg",
-						ThumbnailMiddleURL: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg",
+						FileType:                        "thumbnail",
+						DownloadURL:                     "https://www.blendkit.com/api/v1/downloads/478d21f8-dad9-43c2-a99e-e9bbc474399f/",
+						ThumbnailSmallUrl:               "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg",
+						ThumbnailSmallUrlWebp:           "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg.webp?webp_generated=None",
+						ThumbnailMiddleUrl:              "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg",
+						ThumbnailMiddleUrlWebp:          "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg.webp?webp_generated=None",
+						ThumbnailLargeUrlNonsquared:     "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.1024x1024_q85.jpg",
+						ThumbnailLargeUrlNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.1024x1024_q85.jpg.webp?webp_generated=None",
 					},
 				},
 			},
@@ -1298,36 +1298,96 @@ func Test_parseThumbnailsOnAsset(t *testing.T) {
 			want4: nil,
 		},
 		{ // https://www.blendkit.com/api/v1/assets/4f3f607d-4210-4b0a-bbaa-906b8e2a1fed/
-			name: "Photo & wire thumbs available",
+			name: "WebP not supported",
 			asset: Asset{
-				AssetBaseID:            "975dcf32-d010-4a9a-b093-4d6966175590",
-				DisplayName:            "Triple wall hook",
-				AssetType:              "model",
-				WebpGeneratedTimestamp: 1787831335,
-				ThumbnailSmallURL:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg",
-				ThumbnailSmallURLWebp:  "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg.webp?webp_generated=1766636291",
-				ThumbnailMiddleURL:     "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg",
-				ThumbnailMiddleURLWebp: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg.webp?webp_generated=1766636291",
+				AssetBaseID: "975dcf32-d010-4a9a-b093-4d6966175590",
+				DisplayName: "Triple wall hook",
+				AssetType:   "model",
+				//WebpGeneratedTimestamp: 1766636291,
 				Files: []AssetFile{
 					{
 						FileType:    "blend",
 						DownloadURL: "https://www.blendkit.com/api/v1/downloads/a3c2b935-a394-4b08-a867-260083418d2d/",
 					},
 					{
-						FileType:           "thumbnail",
-						DownloadURL:        "https://www.blendkit.com/api/v1/downloads/478d21f8-dad9-43c2-a99e-e9bbc474399f/",
-						ThumbnailSmallURL:  "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-%2C.jpg",
-						ThumbnailMiddleURL: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-%2C.jpg",
+						FileType:                        "thumbnail",
+						DownloadURL:                     "https://www.blendkit.com/api/v1/downloads/478d21f8-dad9-43c2-a99e-e9bbc474399f/",
+						ThumbnailSmallUrl:               "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg",
+						ThumbnailSmallUrlWebp:           "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg.webp?webp_generated=1766636291",
+						ThumbnailMiddleUrl:              "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg",
+						ThumbnailMiddleUrlWebp:          "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg.webp?webp_generated=1766636291",
+						ThumbnailLargeUrlNonsquared:     "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.1024x1024_q85.jpg",
+						ThumbnailLargeUrlNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.1024x1024_q85.jpg.webp?webp_generated=1766636291",
+					},
+				},
+			},
+			index:        1,
+			appID:        1111,
+			tempDir:      "/tmp/bk_client",
+			addonVersion: "5.2.2",
+			blenderVersion: &BlenderVersionStruct{
+				Major: 3,
+				Minor: 0,
+				Patch: 1,
+			},
+			want1: &Task{
+				Data: DownloadThumbnailData{
+					AddonVersion:  "3.21.5",
+					ThumbnailType: "small",
+					ImagePath:     "/tmp/bk_client/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-%2C.jpg",
+					ImageURL:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg",
+					AssetBaseID:   "975dcf32-d010-4a9a-b093-4d6966175590",
+					Index:         5,
+				},
+				AppID:    1111,
+				TaskType: "thumbnail_download",
+			},
+			want2: &Task{
+				Data: DownloadThumbnailData{
+					AddonVersion:  "3.21.5",
+					ThumbnailType: "full",
+					ImagePath:     "/tmp/bk_client/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-%2C.jpg",
+					ImageURL:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg",
+					AssetBaseID:   "975dcf32-d010-4a9a-b093-4d6966175590",
+					Index:         5,
+				},
+				AppID:    1111,
+				TaskType: "thumbnail_download",
+			},
+			want3: nil,
+			want4: nil,
+		},
+		{ // https://www.blendkit.com/api/v1/assets/4f3f607d-4210-4b0a-bbaa-906b8e2a1fed/
+			name: "Photo & wire thumbs available in webp",
+			asset: Asset{
+				AssetBaseID: "975dcf32-d010-4a9a-b093-4d6966175590",
+				DisplayName: "Triple wall hook",
+				AssetType:   "model",
+				//WebpGeneratedTimestamp: 1766636291,
+				Files: []AssetFile{
+					{
+						FileType:    "blend",
+						DownloadURL: "https://www.blendkit.com/api/v1/downloads/a3c2b935-a394-4b08-a867-260083418d2d/",
 					},
 					{
-						FileType:           "photo_thumbnail",
-						DownloadURL:        "https://www.blendkit.com/api/v1/downloads/478d21f8-dad9-43c2-a99e-e9bbc474399f/",
-						ThumbnailMiddleURL: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/photo_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg",
+						FileType:               "thumbnail",
+						DownloadURL:            "https://www.blendkit.com/api/v1/downloads/478d21f8-dad9-43c2-a99e-e9bbc474399f/",
+						ThumbnailSmallUrl:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg",
+						ThumbnailSmallUrlWebp:  "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg.webp?webp_generated=1766636291",
+						ThumbnailMiddleUrl:     "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg",
+						ThumbnailMiddleUrlWebp: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg.webp?webp_generated=1766636291",
 					},
 					{
-						FileType:           "wire_thumbnail",
-						DownloadURL:        "https://www.blendkit.com/api/v1/downloads/478d21f8-dad9-43c2-a99e-e9bbc474399f/",
-						ThumbnailMiddleURL: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/wire_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg",
+						FileType:               "photo_thumbnail",
+						DownloadURL:            "https://www.blendkit.com/api/v1/downloads/478d21f8-dad9-43c2-a99e-e9bbc474399f/",
+						ThumbnailMiddleUrl:     "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/photo_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg",
+						ThumbnailMiddleUrlWebp: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/photo_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg.webp?webp_generated=1766636291",
+					},
+					{
+						FileType:               "wire_thumbnail",
+						DownloadURL:            "https://www.blendkit.com/api/v1/downloads/478d21f8-dad9-43c2-a99e-e9bbc474399f/",
+						ThumbnailMiddleUrl:     "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/wire_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg",
+						ThumbnailMiddleUrlWebp: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/wire_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg.webp?webp_generated=1766636291",
 					},
 				},
 			},
@@ -1368,6 +1428,98 @@ func Test_parseThumbnailsOnAsset(t *testing.T) {
 				Data: DownloadThumbnailData{
 					AddonVersion:  "3.21.5",
 					ThumbnailType: "photo_full",
+					ImagePath:     "/tmp/bk_client/photo_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-%2C.jpg.webp",
+					ImageURL:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/photo_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg.webp?webp_generated=1766636291",
+					AssetBaseID:   "975dcf32-d010-4a9a-b093-4d6966175590",
+					Index:         5,
+				},
+				AppID:    1111,
+				TaskType: "thumbnail_download",
+			},
+			want4: &Task{
+				Data: DownloadThumbnailData{
+					AddonVersion:  "3.21.5",
+					ThumbnailType: "wire_full",
+					ImagePath:     "/tmp/bk_client/wire_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-%2C.jpg.webp",
+					ImageURL:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/wire_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg.webp?webp_generated=1766636291",
+					AssetBaseID:   "975dcf32-d010-4a9a-b093-4d6966175590",
+					Index:         5,
+				},
+				AppID:    1111,
+				TaskType: "thumbnail_download",
+			},
+		},
+		{ // https://www.blendkit.com/api/v1/assets/4f3f607d-4210-4b0a-bbaa-906b8e2a1fed/
+			name: "Photo & wire thumbs available without webp",
+			asset: Asset{
+				AssetBaseID: "975dcf32-d010-4a9a-b093-4d6966175590",
+				DisplayName: "Triple wall hook",
+				AssetType:   "model",
+				//WebpGeneratedTimestamp: 1766636291,
+				Files: []AssetFile{
+					{
+						FileType:    "blend",
+						DownloadURL: "https://www.blendkit.com/api/v1/downloads/a3c2b935-a394-4b08-a867-260083418d2d/",
+					},
+					{
+						FileType:               "thumbnail",
+						DownloadURL:            "https://www.blendkit.com/api/v1/downloads/478d21f8-dad9-43c2-a99e-e9bbc474399f/",
+						ThumbnailSmallUrl:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg",
+						ThumbnailSmallUrlWebp:  "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg.webp?webp_generated=None",
+						ThumbnailMiddleUrl:     "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg",
+						ThumbnailMiddleUrlWebp: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg.webp?webp_generated=None",
+					},
+					{
+						FileType:               "photo_thumbnail",
+						DownloadURL:            "https://www.blendkit.com/api/v1/downloads/478d21f8-dad9-43c2-a99e-e9bbc474399f/",
+						ThumbnailMiddleUrl:     "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/photo_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg",
+						ThumbnailMiddleUrlWebp: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/photo_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg.webp?webp_generated=None",
+					},
+					{
+						FileType:               "wire_thumbnail",
+						DownloadURL:            "https://www.blendkit.com/api/v1/downloads/478d21f8-dad9-43c2-a99e-e9bbc474399f/",
+						ThumbnailMiddleUrl:     "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/wire_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg",
+						ThumbnailMiddleUrlWebp: "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/wire_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg.webp?webp_generated=None",
+					},
+				},
+			},
+			index:        1,
+			appID:        1111,
+			tempDir:      "/tmp/bk_client",
+			addonVersion: "5.2.2",
+			blenderVersion: &BlenderVersionStruct{
+				Major: 5,
+				Minor: 1,
+				Patch: 1,
+			},
+			want1: &Task{
+				Data: DownloadThumbnailData{
+					AddonVersion:  "3.21.5",
+					ThumbnailType: "small",
+					ImagePath:     "/tmp/bk_client/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-%2C.jpg",
+					ImageURL:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.256x256_q85_crop-,.jpg",
+					AssetBaseID:   "975dcf32-d010-4a9a-b093-4d6966175590",
+					Index:         5,
+				},
+				AppID:    1111,
+				TaskType: "thumbnail_download",
+			},
+			want2: &Task{
+				Data: DownloadThumbnailData{
+					AddonVersion:  "3.21.5",
+					ThumbnailType: "full",
+					ImagePath:     "/tmp/bk_client/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-%2C.jpg",
+					ImageURL:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/thumbnail_e1016411-e8f6-4998-ae47-4b0801a4f210.jpg.512x512_q85_crop-,.jpg",
+					AssetBaseID:   "975dcf32-d010-4a9a-b093-4d6966175590",
+					Index:         5,
+				},
+				AppID:    1111,
+				TaskType: "thumbnail_download",
+			},
+			want3: &Task{
+				Data: DownloadThumbnailData{
+					AddonVersion:  "3.21.5",
+					ThumbnailType: "photo_full",
 					ImagePath:     "/tmp/bk_client/photo_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-%2C.jpg",
 					ImageURL:      "https://public.blenderkit.com/thumbnails/assets/4f3f607d42104b0abbaa906b8e2a1fed/files/photo_thumbnail_39d3d601-c032-4215-b413-2b0bf3446dfe.jpg.512x512_q85_crop-,.jpg",
 					AssetBaseID:   "975dcf32-d010-4a9a-b093-4d6966175590",
@@ -1376,7 +1528,6 @@ func Test_parseThumbnailsOnAsset(t *testing.T) {
 				AppID:    1111,
 				TaskType: "thumbnail_download",
 			},
-
 			want4: &Task{
 				Data: DownloadThumbnailData{
 					AddonVersion:  "3.21.5",
@@ -1505,23 +1656,8 @@ func Test_isWebpSupported(t *testing.T) {
 		want           bool
 	}{
 		{
-			name: "Webp is not generated",
-			want: false,
-			asset: Asset{
-				WebpGeneratedTimestamp: 0,
-			},
-			blenderVersion: &BlenderVersionStruct{
-				Major: 5,
-				Minor: 1,
-				Patch: 1,
-			},
-		},
-		{
-			name: "Webp is generated and Blender supports",
+			name: "Blender supports",
 			want: true,
-			asset: Asset{
-				WebpGeneratedTimestamp: 1787831335,
-			},
 			blenderVersion: &BlenderVersionStruct{
 				Major: 5,
 				Minor: 1,
@@ -1529,11 +1665,8 @@ func Test_isWebpSupported(t *testing.T) {
 			},
 		},
 		{
-			name: "Webp is generated, Blender does not support",
+			name: "Blender is old",
 			want: false,
-			asset: Asset{
-				WebpGeneratedTimestamp: 1787831335,
-			},
 			blenderVersion: &BlenderVersionStruct{
 				Major: 3,
 				Minor: 3,
@@ -1541,16 +1674,23 @@ func Test_isWebpSupported(t *testing.T) {
 			},
 		},
 		{
-			name: "Webp is generated, blenderVersion is nil",
-			want: false,
-			asset: Asset{
-				WebpGeneratedTimestamp: 1787831335,
+			name: "Oldest Blender supporting webp",
+			want: true,
+			blenderVersion: &BlenderVersionStruct{
+				Major: 3,
+				Minor: 4,
+				Patch: 0,
 			},
+		},
+		{
+			name:           "blenderVersion is nil",
+			want:           false,
+			blenderVersion: nil,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := isWebpSupported(tt.asset, tt.blenderVersion)
+			got := isWebpSupported(tt.blenderVersion)
 			if got != tt.want {
 				t.Errorf("isWebpSupported() = %v, want %v", got, tt.want)
 			}
@@ -1562,110 +1702,99 @@ func Test_getFullThumbnailURL(t *testing.T) {
 	tests := []struct {
 		name string // description of this test case
 		// Named input parameters for target function.
-		asset   Asset
-		useWebp bool
-		want    string
+		assetType string
+		assetFile AssetFile
+		useWebp   bool
+		want      string
 	}{
 		{
-			name:    "HDR use webp",
-			want:    "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=1784732123",
-			useWebp: true,
-			asset: Asset{
-				AssetType:                        "hdr",
-				ThumbnailSmallURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg",
-				ThumbnailMiddleURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
-				ThumbnailLargeURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg",
-				ThumbnailXlargeURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg",
-				ThumbnailSmallURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg",
-				ThumbnailMiddleURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg",
-				ThumbnailLargeURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
-				ThumbnailXlargeURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg",
-				ThumbnailSmallURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailMiddleURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailLargeURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailXlargeURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailSmallURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg.webp?webp_generated=1784732123",
-				ThumbnailMiddleURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg.webp?webp_generated=1784732123",
-				ThumbnailLargeURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=1784732123",
-				ThumbnailXlargeURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg.webp?webp_generated=1784732123",
+			name:      "HDR webp supported & present",
+			want:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=1784732123",
+			useWebp:   true,
+			assetType: "hdr",
+			assetFile: AssetFile{
+				ThumbnailSmallUrl:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg",
+				ThumbnailMiddleUrl:              "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
+				ThumbnailLargeUrlNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
+				ThumbnailSmallUrlWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailMiddleUrlWebp:          "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailLargeUrlNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=1784732123",
 			},
 		},
 		{
-			name:    "HDR no webp",
-			want:    "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
-			useWebp: false,
-			asset: Asset{
-				AssetType:                        "hdr",
-				ThumbnailSmallURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg",
-				ThumbnailMiddleURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
-				ThumbnailLargeURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg",
-				ThumbnailXlargeURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg",
-				ThumbnailSmallURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg",
-				ThumbnailMiddleURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg",
-				ThumbnailLargeURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
-				ThumbnailXlargeURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg",
-				ThumbnailSmallURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailMiddleURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailLargeURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailXlargeURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailSmallURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg.webp?webp_generated=1784732123",
-				ThumbnailMiddleURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg.webp?webp_generated=1784732123",
-				ThumbnailLargeURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=1784732123",
-				ThumbnailXlargeURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg.webp?webp_generated=1784732123",
+			name:      "HDR webp unsupported",
+			want:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
+			useWebp:   false,
+			assetType: "hdr",
+			assetFile: AssetFile{
+				ThumbnailSmallUrl:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg",
+				ThumbnailMiddleUrl:              "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
+				ThumbnailLargeUrlNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
+				ThumbnailSmallUrlWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailMiddleUrlWebp:          "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailLargeUrlNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=1784732123",
 			},
 		},
 		{
-			name:    "Model use webp",
-			want:    "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-			useWebp: true,
-			asset: Asset{
-				AssetType:                        "model",
-				ThumbnailSmallURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg",
-				ThumbnailMiddleURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
-				ThumbnailLargeURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg",
-				ThumbnailXlargeURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg",
-				ThumbnailSmallURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg",
-				ThumbnailMiddleURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg",
-				ThumbnailLargeURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
-				ThumbnailXlargeURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg",
-				ThumbnailSmallURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailMiddleURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailLargeURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailXlargeURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailSmallURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg.webp?webp_generated=1784732123",
-				ThumbnailMiddleURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg.webp?webp_generated=1784732123",
-				ThumbnailLargeURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=1784732123",
-				ThumbnailXlargeURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg.webp?webp_generated=1784732123",
+			name:      "HDR webp not present",
+			want:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
+			useWebp:   true,
+			assetType: "hdr",
+			assetFile: AssetFile{
+				ThumbnailSmallUrl:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg",
+				ThumbnailMiddleUrl:              "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
+				ThumbnailLargeUrlNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
+				ThumbnailSmallUrlWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg.webp?webp_generated=None",
+				ThumbnailMiddleUrlWebp:          "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=None",
+				ThumbnailLargeUrlNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=None",
 			},
 		},
 		{
-			name:    "Printable no webp",
-			want:    "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
-			useWebp: false,
-			asset: Asset{
-				AssetType:                        "printable",
-				ThumbnailSmallURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg",
-				ThumbnailMiddleURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
-				ThumbnailLargeURL:                "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg",
-				ThumbnailXlargeURL:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg",
-				ThumbnailSmallURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg",
-				ThumbnailMiddleURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg",
-				ThumbnailLargeURLNonsquared:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
-				ThumbnailXlargeURLNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg",
-				ThumbnailSmallURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailMiddleURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailLargeURLWebp:            "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailXlargeURLWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
-				ThumbnailSmallURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85.jpg.webp?webp_generated=1784732123",
-				ThumbnailMiddleURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85.jpg.webp?webp_generated=1784732123",
-				ThumbnailLargeURLNonsquaredWebp:  "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=1784732123",
-				ThumbnailXlargeURLNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.2048x2048_q85.jpg.webp?webp_generated=1784732123",
+			name:      "Model webp supported & present",
+			want:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+			useWebp:   true,
+			assetType: "model",
+			assetFile: AssetFile{
+				ThumbnailSmallUrl:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg",
+				ThumbnailMiddleUrl:              "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
+				ThumbnailLargeUrlNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
+				ThumbnailSmallUrlWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailMiddleUrlWebp:          "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailLargeUrlNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=1784732123",
+			},
+		},
+		{
+			name:      "Printable webp not supported",
+			want:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
+			useWebp:   false,
+			assetType: "printable",
+			assetFile: AssetFile{
+				ThumbnailSmallUrl:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg",
+				ThumbnailMiddleUrl:              "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
+				ThumbnailLargeUrlNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
+				ThumbnailSmallUrlWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailMiddleUrlWebp:          "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=1784732123",
+				ThumbnailLargeUrlNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=1784732123",
+			},
+		},
+		{
+			name:      "Material webp not present",
+			want:      "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
+			useWebp:   true,
+			assetType: "material",
+			assetFile: AssetFile{
+				ThumbnailSmallUrl:               "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg",
+				ThumbnailMiddleUrl:              "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg",
+				ThumbnailLargeUrlNonsquared:     "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg",
+				ThumbnailSmallUrlWebp:           "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.256x256_q85_crop-%2C.jpg.webp?webp_generated=None",
+				ThumbnailMiddleUrlWebp:          "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.512x512_q85_crop-%2C.jpg.webp?webp_generated=None",
+				ThumbnailLargeUrlNonsquaredWebp: "https://public.blenderkit.com/thumbnails/assets/7fed2ece1a9a4fdeba4d6cc2ea1f749e/files/thumbnail_4a697c7d-5a7a-4625-bb96-4282ca6890fc.jpg.1024x1024_q85.jpg.webp?webp_generated=None",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := getFullThumbnailURL(tt.asset, tt.useWebp)
+			got := getFullThumbnailURL(tt.assetFile, tt.assetType, tt.useWebp)
 
 			if got != tt.want {
 				t.Errorf("getFullThumbnailURL() = %v, want %v", got, tt.want)
