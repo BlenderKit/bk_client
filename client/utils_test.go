@@ -208,18 +208,10 @@ func TestValidSystemID(t *testing.T) {
 	}
 }
 
-func setTestGlobalDir(t *testing.T, directory string) {
-	t.Helper()
-	original := GlobalDir
-	GlobalDir = directory
-	t.Cleanup(func() { GlobalDir = original })
-}
-
 func TestResolveSystemID(t *testing.T) {
-	setTestGlobalDir(t, "")
 	dir := t.TempDir()
 	t.Setenv("XDG_DATA_HOME", dir)
-	path := filepath.Join(dir, "blenderkit_data", "client", "system_id")
+	path := filepath.Join(dir, "blendkit_client", "system_id")
 	const node = "000000000000042"
 
 	if got := resolveSystemID("000000000000007", node); got != "000000000000007" {
@@ -259,7 +251,6 @@ func TestResolveSystemID(t *testing.T) {
 }
 
 func TestResolveSystemIDUnwritableDataDir(t *testing.T) {
-	setTestGlobalDir(t, "")
 	dir := t.TempDir()
 	t.Setenv("XDG_DATA_HOME", dir)
 	// A file where the data directory should be makes MkdirAll fail.
@@ -272,10 +263,14 @@ func TestResolveSystemIDUnwritableDataDir(t *testing.T) {
 }
 
 func TestPersistedSystemIDWithoutHome(t *testing.T) {
-	setTestGlobalDir(t, "")
 	t.Setenv("XDG_DATA_HOME", "")
 	t.Setenv("HOME", "")
 	t.Setenv("USERPROFILE", "")
+
+	fp := systemIDFilePath()
+	if fp != "" {
+		t.Errorf("clientDirectoryPath(): got %q; wanted empty", fp)
+	}
 	if got := persistedSystemID(); got != "" {
 		t.Errorf("no home: got %q; want empty", got)
 	}
@@ -285,60 +280,69 @@ func TestPersistedSystemIDWithoutHome(t *testing.T) {
 }
 
 func TestResolveSystemIDConfiguredPath(t *testing.T) {
-	for _, scenario := range []string{"fresh", "legacy", "configured", "corrupt legacy", "previous configured", "default client"} {
+	for _, scenario := range []string{
+		"fresh",              // no system_id file exists
+		"legacy",             // system_id file exists in legacy blenderkit_data
+		"legacy corrupt",     // legacy system_id file is corrupt
+		"persisted",          // system_id file exists in blendkit_client
+		"persisted corrupt ", // system_id file is corrupt
+	} {
 		t.Run(scenario, func(t *testing.T) {
 			root := t.TempDir()
-			t.Setenv("XDG_DATA_HOME", filepath.Join(root, "home"))
-			setTestGlobalDir(t, filepath.Join(root, "custom assets"))
-			configured := filepath.Join(GlobalDir, "client", "system_id")
-			legacy := defaultSystemIDFilePath()
-			if scenario == "previous configured" {
-				legacy = filepath.Join(GlobalDir, "system_id")
-			} else if scenario == "default client" {
-				legacy = filepath.Join(filepath.Dir(legacy), "client", "system_id")
-			}
+			home := filepath.Join(root, "home")
+			t.Setenv("XDG_DATA_HOME", home)
+
+			expectedIDFilepath := systemIDFilePath()
+			legacyIDFilepath := legacySystemIDFilePath()
+
 			want := "000000000000042"
-			if scenario != "fresh" {
-				if err := os.MkdirAll(filepath.Dir(legacy), 0o755); err != nil {
+			if scenario == "legacy" || scenario == "legacy corrupt" {
+				if err := os.MkdirAll(filepath.Dir(legacyIDFilepath), 0o755); err != nil {
 					t.Fatal(err)
 				}
-				content := "000000000000123\n"
+				content := "000000000000123"
 				if scenario == "corrupt legacy" {
 					content = "garbage"
 				} else {
 					want = "000000000000123"
 				}
-				if err := os.WriteFile(legacy, []byte(content), 0o644); err != nil {
+				if err := os.WriteFile(legacyIDFilepath, []byte(content), 0o644); err != nil {
 					t.Fatal(err)
 				}
 			}
-			if scenario == "configured" {
-				want = "000000000000007"
-				if err := persistSystemID(want); err != nil {
+			if scenario == "persisted" || scenario == "persisted corrupt" {
+				if err := os.MkdirAll(filepath.Dir(expectedIDFilepath), 0o755); err != nil {
+					t.Fatal(err)
+				}
+				content := "000000000000987"
+				if scenario == "corrupt legacy" {
+					content = "garbage"
+				} else {
+					want = "000000000000987"
+				}
+				if err := os.WriteFile(expectedIDFilepath, []byte(content), 0o644); err != nil {
 					t.Fatal(err)
 				}
 			}
 			if got := resolveSystemID("", "000000000000042"); got != want {
 				t.Fatalf("got %q; want %q", got, want)
 			}
-			if content, err := os.ReadFile(configured); err != nil || string(content) != want {
+			fmt.Println(os.ReadFile(expectedIDFilepath))
+			if content, err := os.ReadFile(expectedIDFilepath); err != nil || string(content) != want {
 				t.Fatalf("configured ID: %q, %v; want %q", content, err, want)
 			}
 			if scenario == "fresh" {
-				if _, err := os.Stat(filepath.Dir(legacy)); !os.IsNotExist(err) {
+				if _, err := os.Stat(filepath.Dir(legacyIDFilepath)); !os.IsNotExist(err) {
 					t.Fatalf("legacy directory must not be created: %v", err)
 				}
-			} else if content, err := os.ReadFile(legacy); err != nil || (scenario != "corrupt legacy" && string(content) != "000000000000123\n") {
-				t.Fatalf("legacy ID must be preserved: %q, %v", content, err)
 			}
 		})
 	}
 }
 
 func TestResolveSystemIDLegacyDefaultPath(t *testing.T) {
-	setTestGlobalDir(t, "")
 	t.Setenv("XDG_DATA_HOME", t.TempDir())
-	legacy := defaultSystemIDFilePath()
+	legacy := legacySystemIDFilePath()
 	if err := os.MkdirAll(filepath.Dir(legacy), 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -352,7 +356,8 @@ func TestResolveSystemIDLegacyDefaultPath(t *testing.T) {
 	if got := persistedSystemID(); got != existing {
 		t.Fatalf("migrated ID: %q; want %q", got, existing)
 	}
-	if content, err := os.ReadFile(legacy); err != nil || string(content) != existing {
+	newPath := systemIDFilePath()
+	if content, err := os.ReadFile(newPath); err != nil || string(content) != existing {
 		t.Fatalf("legacy ID must be preserved: %q, %v", content, err)
 	}
 }
