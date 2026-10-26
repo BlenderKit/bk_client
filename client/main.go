@@ -88,12 +88,11 @@ const (
 var (
 	ClientVersion        = "0.0.0" // Version of this Blendkit-client binary, set from file client/VERSION with -ldflags during build in dev.py
 	SystemID             *string   // Unique ID of the current system (string of 15 integers)
-	GlobalDir            string
-	Port                 *string // Port on which Client should listen for HTTP requests
-	Server               *string // Address of Blendkit server to which Client should connect
-	StartingAddonVersion *string // Version of the add-on which has started the Client
-	StartingSoftwareName *string // Name of the software whose add-on has started the Client
-	StartingPID          *string // Process ID of the software whose add-on has started the Client
+	Port                 *string   // Port on which Client should listen for HTTP requests
+	Server               *string   // Address of Blendkit server to which Client should connect
+	StartingAddonVersion *string   // Version of the add-on which has started the Client
+	StartingSoftwareName *string   // Name of the software whose add-on has started the Client
+	StartingPID          *string   // Process ID of the software whose add-on has started the Client
 
 	OAuth2Sessions    map[string]OAuth2VerificationData // Map of OAuth2 sessions, key is the state string
 	OAuth2SessionsMux sync.Mutex
@@ -272,14 +271,11 @@ func main() {
 	StartingSoftwareName = flag.String("software", "", "name of the software whose add-on starts the Client")
 	StartingPID = flag.String("pid", "", "PID of the process (running software) whose add-on starts the Client")
 	singleInstance := flag.Bool("single-instance", false, "if a Client of this version is already running, exit gracefully and leave the original running")
-	systemIDOverride := flag.String("system_id", "", "machine ID (15 digits) to report instead of the persisted or MAC-derived one")
-	globalDir := flag.String("global_dir", "", "configured Blendkit data directory")
+	systemIDFlag := flag.String("system_id", "", "machine ID (15 digits) to report instead of the persisted or MAC-derived one")
 	flag.Parse()
-	GlobalDir = *globalDir
 
 	// The Client owns the machine ID: flag > persisted file > MAC-derived value
-	// from init(), which is persisted on first use. See resolveSystemID.
-	resolved := resolveSystemID(*systemIDOverride, *SystemID)
+	resolved := resolveSystemID(*systemIDFlag, *SystemID)
 	SystemID = &resolved
 
 	// A standalone Client is one a user started directly — no add-on passed its

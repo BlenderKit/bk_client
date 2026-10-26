@@ -102,19 +102,44 @@ func validSystemID(s string) bool {
 	return true
 }
 
-// systemIDFilePath mirrors the add-on's paths.get_system_id_filepath().
-func systemIDFilePath() string {
-	if GlobalDir != "" {
-		return filepath.Join(GlobalDir, "client", "system_id")
+// Get the path to the Blendkit-Client directory where binaries and all data for the client are stored.
+//
+// On Windows: `%LOCALAPPDATA%\blendkit_client`, e.g.: C:\Users\<Username>\AppData\Local\blendkit_client.
+// On Linux and MacOS: `$XDG_DATA_HOME`, if not set then: `$HOME/.local/share/blendkit_client`,
+// following XDG Base Directory Specification (https://specifications.freedesktop.org/basedir/latest/#variables).
+//
+// Returns empty string if it totally fails to find any Home directory.
+func clientDirectoryPath() string {
+	dirname := "blendkit_client"
+	if runtime.GOOS == "Windows" {
+		return path.Join(os.Getenv("LOCALAPPDATA"), dirname)
 	}
-	legacy := defaultSystemIDFilePath()
-	if legacy == "" {
-		return ""
+
+	// Linux, MacOS and unexpected OSs
+	xdg_data_home := os.Getenv("XDG_DATA_HOME")
+	if xdg_data_home == "" {
+		home_dir, err := os.UserHomeDir()
+		if err != nil {
+			BKLog.Printf("Could not get user home directory: %v", err)
+			return ""
+		}
+		xdg_data_home = path.Join(home_dir, ".local", "share")
 	}
-	return filepath.Join(filepath.Dir(legacy), "client", "system_id")
+	return path.Join(xdg_data_home, dirname)
 }
 
-func defaultSystemIDFilePath() string {
+// Where Blendkit-Client keeps the machine ID file.
+func systemIDFilePath() string {
+	cdp := clientDirectoryPath()
+	if cdp == "" {
+		return ""
+	}
+	return filepath.Join(cdp, "system_id")
+}
+
+// Legacy location for the system_id file which was basically $HOME/blenderkit_data/system_id,
+// independent of the actual Global Directory setting.
+func legacySystemIDFilePath() string {
 	home := os.Getenv("XDG_DATA_HOME")
 	if home == "" {
 		var err error
@@ -129,9 +154,15 @@ func defaultSystemIDFilePath() string {
 // persistedSystemID returns the machine ID stored in the data directory, or "" when
 // the file is absent or holds anything but 15 digits.
 func persistedSystemID() string {
-	return readSystemID(systemIDFilePath())
+	fp := systemIDFilePath()
+	if fp == "" {
+		return ""
+	}
+	return readSystemID(fp)
 }
 
+// Read system_id file, validate its contents and return the ID.
+// If something is wrong return empty string.
 func readSystemID(path string) string {
 	if path == "" {
 		return ""
@@ -167,39 +198,49 @@ func persistSystemID(id string) error {
 // resolveSystemID returns the machine ID the Client reports and owns its persistence.
 //
 // Precedence: the --system_id flag, the ID stored in the data directory, and only
-// then the MAC-derived nodeID - which is then written down so the next start
+// then the MAC-derived pregeneratedID (coming from GetSystemID in init()) - which is then written down so the next start
 // reports the same machine even after MAC randomization or an adapter change.
 // The Client is the writer; add-ons only read the file (Blender add-on
 // paths.get_stable_system_id()). Seeding from the Client's own MAC value keeps the
 // ID the server already knows: measured on production, Python's uuid.getnode()
 // picks a different adapter than this Client on 79% of Windows machines, so an
 // add-on-written seed would have renamed most of them.
-func resolveSystemID(override, nodeID string) string {
-	if override != "" {
-		if validSystemID(override) {
-			return override
+func resolveSystemID(systemIDFlag, pregeneratedID string) string {
+	// FLAG
+	if systemIDFlag != "" {
+		if validSystemID(systemIDFlag) {
+			return systemIDFlag
 		}
-		BKLog.Printf("Ignoring invalid --system_id %q", override)
+		BKLog.Printf("Ignoring invalid --system_id %q", systemIDFlag)
 	}
-	if persisted := persistedSystemID(); persisted != "" {
-		return persisted
+
+	// PERSISTED FILE
+	persistedID := persistedSystemID()
+	if persistedID != "" {
+		return persistedID
 	}
-	if path := systemIDFilePath(); path != "" {
-		legacyPaths := []string{filepath.Join(filepath.Dir(filepath.Dir(path)), "system_id")}
-		if legacy := defaultSystemIDFilePath(); legacy != "" {
-			legacyPaths = append(legacyPaths, filepath.Join(filepath.Dir(legacy), "client", "system_id"), legacy)
+
+	// LEGACY LOCATION
+	legacyPath := legacySystemIDFilePath()
+	legacyID := readSystemID(legacyPath)
+	if legacyID != "" {
+		if err := persistSystemID(legacyID); err != nil {
+			BKLog.Printf("%s Could not persist system_id, reporting the resolved legacy ID: %v", EmoWarning, err)
+			return legacyID
 		}
-		for _, legacyPath := range legacyPaths {
-			if legacy := readSystemID(legacyPath); legacy != "" {
-				nodeID = legacy
-				break
-			}
+		err := DeleteFile(legacyPath)
+		if err != nil {
+			BKLog.Printf("%s Could not delete legacy system_id file: %v", EmoWarning, err)
 		}
+		return legacyID
 	}
-	if err := persistSystemID(nodeID); err != nil {
-		BKLog.Printf("%s Could not persist system_id, reporting the resolved ID: %v", EmoWarning, err)
+
+	// USE PREGENERATED ID
+	err := persistSystemID(pregeneratedID)
+	if err != nil {
+		BKLog.Printf("%s Could not persist new system_id, reporting the resolved ID: %v", EmoWarning, err)
 	}
-	return nodeID
+	return pregeneratedID
 }
 
 func StringToAddonVersion(s string) (*AddonVersionStruct, error) {
