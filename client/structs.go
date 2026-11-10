@@ -200,6 +200,7 @@ type Asset struct {
 	ShowMarketingLabels              bool                   `json:"showMarketingLabels"`
 	SourceAppName                    string                 `json:"sourceAppName"`
 	SourceAppVersion                 string                 `json:"sourceAppVersion"`
+	Structure                        string                 `json:"structure,omitempty"`
 	Tags                             []string               `json:"tags"`
 	ThumbnailLargeURL                string                 `json:"thumbnailLargeUrl"`
 	ThumbnailLargeURLNonsquared      string                 `json:"thumbnailLargeUrlNonsquared"`
@@ -218,6 +219,7 @@ type Asset struct {
 	ThumbnailXlargeURLNonsquaredWebp string                 `json:"thumbnailXlargeUrlNonsquaredWebp"`
 	ThumbnailXlargeURLWebp           string                 `json:"thumbnailXlargeUrlWebp"`
 	URL                              string                 `json:"url"`
+	Variants                         []json.RawMessage      `json:"variants,omitempty"`
 	VerificationStatus               string                 `json:"verificationStatus"`
 	VersionNumber                    int                    `json:"versionNumber"`
 	VideoLink                        string                 `json:"videoLink"`
