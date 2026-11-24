@@ -17,6 +17,7 @@ A machine-readable [OpenAPI 3.1 spec](openapi.json) is generated alongside this 
 | Method | Path | Versioned | Auth | Summary | Request body |
 |---|---|:---:|:---:|---|---|
 | GET | `/` |  |  | Client status page | — |
+| GET | `/network/health` |  |  | Network reachability status | — |
 | POST | `/report` | ✓ |  | Poll for tasks | `GetReportData` |
 | POST | `/report_event` | ✓ |  | Report a telemetry event | `ReportEventData` |
 | POST | `/report_usages` | ✓ |  | Report the assets present in a file at a save or a render | `ReportUsagesData` |
@@ -146,6 +147,12 @@ A machine-readable [OpenAPI 3.1 spec](openapi.json) is generated alongside this 
 Returns a human-readable HTML status page with the Client PID, version, platform, system ID and the add-on that started it, plus the connected softwares (fetched from /addons/list) with buttons to disconnect a software (/addons/unsubscribe) or quit the Client (/shutdown). Opened from the tray icon's "Open Client Status" item. Any non-root path returns 404.
 
 - **Handler:** `indexHandler`
+
+#### `GET /network/health`
+
+Returns the most recent background network checks and any confirmed issue. Checks run at startup and hourly using the Client's proxy and TLS configuration; CDN host reachability does not verify access to signed asset URLs.
+
+- **Handler:** `networkHealthHandler`
 
 #### `POST /report`
 

@@ -4,6 +4,21 @@ This is a Client for Blendkit (previously daemon).
 It's a local server that listens for requests from Blendkit add-ons and processes them.
 Written in Go.
 
+## Network connectivity status
+
+The Client status page shows background checks of the configured API server,
+thumbnail host, download mirrors, and optional legacy website and Gravatar
+hosts. Checks run at startup and hourly, using the Client's proxy and TLS
+settings. Failed checks are retried once before being reported. The tray warns
+only when the API or thumbnail check fails twice, or every download mirror
+fails twice; it clears the warning after a successful later check.
+
+The download hosts can require signed URLs, so their checks establish HTTP
+reachability only, not whether an asset can be downloaded. A response such as
+403 can be expected at a host's root. The server provides actual download URLs
+and may not offer every mirror, including the conditional CloudFront fallback.
+The Client cannot verify connectivity from a plugin's separate network stack.
+
 ## Remote download fallback
 
 Signed download metadata accepts an ordered `filePaths: [{"url": "..."}]`

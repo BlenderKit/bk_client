@@ -8,30 +8,35 @@
 <style>
   :root {
     color-scheme: light dark;
-    --bg: #fafafa; --fg: #222; --muted: #666; --line: #ddd;
-    --hover: #eee; --accent: #6334fc; --danger: #b32d32;
+    --bg: #f5f6f8; --surface: #fff; --fg: #242735; --muted: #697080; --line: #e2e5eb;
+    --hover: #f2f3f7; --accent: #6334fc; --danger: #b32d32;
+    --success: #18764a; --success-bg: #e6f5ec; --warning: #9a5b07; --warning-bg: #fff4df;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #1b1b1b; --fg: #eee; --muted: #aaa; --line: #383838;
-      --hover: #292929; --accent: #a58aff; --danger: #f06b6b;
+      --bg: #141519; --surface: #1d1f25; --fg: #f0f1f5; --muted: #a3a8b5; --line: #353943;
+      --hover: #292c34; --accent: #b4a1ff; --danger: #ff8989;
+      --success: #79d8a1; --success-bg: #1d3b2b; --warning: #f0be6b; --warning-bg: #44351e;
     }
   }
   * { box-sizing: border-box; }
   body {
     margin: 0; background: var(--bg); color: var(--fg);
-    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
-  main { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem; }
-  header { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.25rem; }
-  .logo { width: 28px; height: 33px; flex-shrink: 0; }
-  h1 { font-size: 1.75rem; margin: 0; font-weight: 600; letter-spacing: -.03em; }
-  h2 { font-size: 1.25rem; font-weight: 400; color: var(--muted); margin: 1.75rem 0 .75rem; letter-spacing: -.02em; }
-  .block { margin-bottom: 1.75rem; }
-  h3 { margin: 0 0 .5rem; font-size: 1.4rem; line-height: 1.35; font-weight: 600; letter-spacing: -.02em; overflow-wrap: anywhere; }
+  main { max-width: 800px; margin: 0 auto; padding: 2.5rem 1.25rem 3rem; }
+  header { display: flex; align-items: center; gap: .85rem; margin-bottom: 1.5rem; }
+  .logo { width: 34px; height: 39px; flex-shrink: 0; }
+  h1 { font-size: 1.65rem; line-height: 1.2; margin: 0; font-weight: 650; letter-spacing: -.03em; }
+  .subtitle { color: var(--muted); font-size: .85rem; margin: .15rem 0 0; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 1.25rem 1.4rem; margin-top: 1rem; }
+  .card-heading { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .85rem; }
+  h2 { font-size: 1rem; font-weight: 650; margin: 0; letter-spacing: -.01em; }
+  .block + .block { border-top: 1px solid var(--line); padding-top: 1rem; margin-top: 1rem; }
+  h3 { margin: 0 0 .5rem; font-size: 1.1rem; line-height: 1.35; font-weight: 600; letter-spacing: -.02em; overflow-wrap: anywhere; }
   h3 .sub { font-weight: 400; }
-  .actions { margin-top: .75rem; }
-  dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: .15rem 1.5rem; margin: 0; }
+  .actions { margin-top: 1rem; }
+  dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: .25rem 1.5rem; margin: 0; font-size: .92rem; }
   dt { color: var(--muted); }
   dt[title] { cursor: help; text-decoration: underline dotted; text-underline-offset: .2em; }
   dd { margin: 0; overflow-wrap: anywhere; }
@@ -40,7 +45,7 @@
     padding: .3rem .85rem; background: transparent; color: var(--fg); border: 1px solid var(--line);
   }
   button:hover { background: var(--hover); border-color: var(--muted); }
-  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   button.danger { color: var(--danger); }
   button.danger:hover { border-color: var(--danger); }
   button:disabled { opacity: .5; cursor: default; }
@@ -48,9 +53,35 @@
   #notice:empty { display: none; }
   #notice.err { color: var(--danger); }
   .empty { color: var(--muted); margin: 0; }
+  .network-summary { display: flex; align-items: center; gap: .5rem; margin: 0; font-weight: 600; }
+  .status-icon {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 1.2rem;
+    width: 1.2rem; height: 1.2rem; border-radius: 50%; font-size: .75rem; font-weight: 700;
+    background: var(--hover); color: var(--muted);
+  }
+  .status-icon.reachable { background: var(--success-bg); color: var(--success); }
+  .status-icon.failed { background: var(--warning-bg); color: var(--warning); }
+  .network-time, .network-detail { color: var(--muted); font-size: .82rem; overflow-wrap: anywhere; }
+  .network-time { margin: .2rem 0 0 1.7rem; }
+  .network-chips { display: flex; flex-wrap: wrap; gap: .45rem; list-style: none; padding: 0; margin: 1rem 0 0; }
+  .network-chip { display: flex; align-items: center; gap: .4rem; border: 1px solid var(--line); border-radius: 8px; padding: .3rem .55rem; font-size: .82rem; overflow-wrap: anywhere; min-width: 0; }
+  .network-failures { margin-top: .7rem; }
+  .network-failures:empty { display: none; }
+  .network-failure { color: var(--warning); font-size: .85rem; margin: .25rem 0; overflow-wrap: anywhere; }
+  .network-details { border-top: 1px solid var(--line); margin-top: 1rem; padding-top: .75rem; }
+  .network-details summary { color: var(--muted); font-size: .85rem; cursor: pointer; width: fit-content; }
+  .network-details summary:hover { color: var(--fg); }
+  .network-list { list-style: none; padding: 0; margin: .6rem 0; }
+  .network-list li { display: grid; grid-template-columns: 1fr auto; gap: .1rem 1rem; padding: .45rem 0; border-bottom: 1px solid var(--line); font-size: .85rem; }
+  .network-host { grid-column: 1 / -1; color: var(--muted); overflow-wrap: anywhere; }
+  .network-status.failed { color: var(--warning); }
+  .network-detail { margin: .7rem 0 0; }
   @media (max-width: 400px) {
     main { padding: 1.25rem 1rem; }
+    .card { padding: 1rem; }
     dl { column-gap: .75rem; }
+    .network-chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .network-chip { font-size: .75rem; padding: .3rem .4rem; }
   }
 </style>
 </head>
@@ -58,15 +89,33 @@
 <main>
   <header>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 276.67 319.87" class="logo" aria-hidden="true"><defs><linearGradient id="b" x1="351.7" x2="376.03" y1="172.76" y2="435.53" gradientTransform="translate(-224.39 -146.3)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#28afdf"/><stop offset=".112" stop-color="#48b1ba"/><stop offset=".199" stop-color="#53b2a3"/><stop offset=".309" stop-color="#5fb47d"/><stop offset=".388" stop-color="#66b557"/><stop offset=".416" stop-color="#6db34a"/><stop offset=".557" stop-color="#9e9c42"/><stop offset=".722" stop-color="#c67937"/><stop offset=".846" stop-color="#de522d"/><stop offset="1" stop-color="#ed1f24"/></linearGradient><clipPath id="a"><path d="m138.93 320.42 138.33-79.97V80.52L138.93.55.59 80.52v159.93z"/></clipPath></defs><g clip-path="url(#a)" transform="translate(-.59 -.55)"><path fill="url(#b)" d="M-71.81-50.57h421.47v422.11H-71.81z" transform="rotate(-44.4 138.93 160.49)"/></g></svg>
-    <h1>Blendkit Client</h1>
+    <div><h1>Blendkit Client</h1><p class="subtitle">Client status &amp; connectivity</p></div>
   </header>
   <div id="notice" role="status"></div>
 
-  <dl id="client" aria-label="Client information"></dl>
-  <div class="actions" id="client-actions"><button id="quit" class="danger">Quit Client</button></div>
+  <section class="card" aria-labelledby="client-heading">
+    <div class="card-heading"><h2 id="client-heading">Client information</h2></div>
+    <dl id="client" aria-label="Client information"></dl>
+    <div class="actions" id="client-actions"><button id="quit" class="danger">Quit Client</button></div>
+  </section>
 
-  <h2 id="sw-heading">Connected software</h2>
-  <div id="softwares"></div>
+  <section class="card" aria-labelledby="network-heading">
+    <div class="card-heading"><h2 id="network-heading">Network connectivity</h2></div>
+    <div class="network-summary" role="status"><span id="network-icon" class="status-icon" aria-hidden="true">·</span><span id="network-summary">Checking network connectivity…</span></div>
+    <p id="network-time" class="network-time"></p>
+    <ul id="network-chips" class="network-chips" aria-label="Domain reachability"></ul>
+    <div id="network-failures" class="network-failures"></div>
+    <details class="network-details">
+      <summary>Connection details</summary>
+      <ul id="network-list" class="network-list"></ul>
+      <p class="network-detail">Checks run at startup and hourly using the Client's proxy and TLS settings. Host reachability does not verify access to thumbnails or signed downloads. Optional services and individual fallback failures do not trigger a tray warning.</p>
+    </details>
+  </section>
+
+  <section class="card" aria-labelledby="sw-heading">
+    <div class="card-heading"><h2 id="sw-heading">Connected software</h2></div>
+    <div id="softwares"></div>
+  </section>
 </main>
 
 <script>
@@ -158,6 +207,64 @@
   let clientDown = false;
   let refreshFailed = false;
 
+  async function refreshNetwork() {
+    try {
+      const resp = await fetch("/network/health", { cache: "no-store" });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      const results = data.results || [];
+      const summary = $("network-summary");
+      const failures = results.filter((result) => result.status !== "reachable");
+      summary.textContent = !results.length ? "Checking network connectivity…"
+        : data.issue || (failures.length ? `${failures.length} host check${failures.length === 1 ? "" : "s"} failed` : "All hosts reachable");
+      const icon = $("network-icon");
+      icon.className = `status-icon ${!results.length ? "" : failures.length ? "failed" : "reachable"}`;
+      icon.textContent = !results.length ? "·" : failures.length ? "!" : "✓";
+      $("network-time").textContent = results.length ? `Checked ${new Date(data.checkedAt).toLocaleString()}` : "";
+      $("network-chips").replaceChildren(...results.map((result) => {
+        const chip = document.createElement("li");
+        chip.className = "network-chip";
+        const status = document.createElement("span");
+        status.className = `status-icon ${result.status === "reachable" ? "reachable" : "failed"}`;
+        status.textContent = result.status === "reachable" ? "✓" : "!";
+        status.setAttribute("aria-hidden", "true");
+        const label = document.createElement("span");
+        label.textContent = result.host;
+        chip.setAttribute("aria-label", `${result.name}: ${result.host}, ${result.status === "reachable" ? "reachable" : "check failed"}`);
+        chip.title = result.name;
+        chip.append(status, label);
+        return chip;
+      }));
+      $("network-failures").replaceChildren(...failures.map((result) => {
+        const failure = document.createElement("p");
+        failure.className = "network-failure";
+        failure.textContent = `${result.name} (${result.host}): ${result.detail}`;
+        return failure;
+      }));
+      $("network-list").replaceChildren(...results.map((result) => {
+        const li = document.createElement("li");
+        const name = document.createElement("strong");
+        name.textContent = result.name;
+        const status = document.createElement("span");
+        status.className = `network-status ${result.status}`;
+        status.textContent = result.status === "reachable" ? "Reachable" : "Check failed";
+        const detail = document.createElement("div");
+        detail.className = "network-host";
+        detail.textContent = `${result.host} · ${result.detail}`;
+        li.append(name, status, detail);
+        return li;
+      }));
+    } catch (e) {
+      $("network-icon").className = "status-icon failed";
+      $("network-icon").textContent = "!";
+      $("network-summary").textContent = `Network status unavailable: ${e.message}`;
+      $("network-time").textContent = "";
+      $("network-chips").replaceChildren();
+      $("network-failures").replaceChildren();
+      $("network-list").replaceChildren();
+    }
+  }
+
   async function refresh() {
     let data;
     try {
@@ -202,7 +309,10 @@
     }
   };
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") refresh();
+    if (document.visibilityState === "visible") {
+      refresh();
+      refreshNetwork();
+    }
   });
 
   let pending = null;
@@ -214,6 +324,10 @@
 
   fields($("client"), CLIENT);
   refresh();
+  refreshNetwork();
+  setInterval(() => {
+    if (document.visibilityState === "visible") refreshNetwork();
+  }, 10000);
 </script>
 </body>
 </html>

@@ -330,6 +330,7 @@ func main() {
 	}
 
 	CreateHTTPClients(*proxy_address, *proxy_which, *ssl_context, *trusted_ca_certs)
+	go clientNetworkHealth.run(ClientAPI, *Server)
 
 	// Initialize the Client-owned settings store. The Client is the source of
 	// truth for settings shared with plugins; settings are scoped to this Client
@@ -356,6 +357,7 @@ func main() {
 	vapi := fmt.Sprintf("v%s.%s", version_parts[0], version_parts[1])
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", indexHandler)
+	mux.HandleFunc("/network/health", networkHealthHandler)
 
 	// BASIC functionality
 	mux.HandleFunc("/report", reportHandler)

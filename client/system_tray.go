@@ -23,6 +23,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"time"
 
 	"fyne.io/systray"
 )
@@ -42,6 +43,8 @@ func runTray(serverURL, listenAddr string) {
 		mVersion.Disable()
 		mAddr := systray.AddMenuItem("Listening on "+listenAddr, "Local address the Client serves on")
 		mAddr.Disable()
+		mNetwork := systray.AddMenuItem("Network issue", "Open Client Status for details")
+		mNetwork.Hide()
 
 		systray.AddSeparator()
 		mOpenWeb := systray.AddMenuItem("Open Blendkit.com", "Open the Blendkit website in your browser")
@@ -59,8 +62,23 @@ func runTray(serverURL, listenAddr string) {
 		devURL := fmt.Sprintf("http://%s/dev", listenAddr)
 
 		go func() {
+			ticker := time.NewTicker(time.Second)
+			defer ticker.Stop()
+			lastIssue := ""
 			for {
 				select {
+				case <-ticker.C:
+					if issue := clientNetworkHealth.get().Issue; issue != lastIssue {
+						lastIssue = issue
+						if issue == "" {
+							mNetwork.Hide()
+						} else {
+							mNetwork.SetTitle("Network issue: " + issue)
+							mNetwork.Show()
+						}
+					}
+				case <-mNetwork.ClickedCh:
+					openInBrowser(statusURL)
 				case <-mOpenWeb.ClickedCh:
 					openInBrowser(serverURL)
 				case <-mOpenStatus.ClickedCh:

@@ -75,6 +75,12 @@ func Routes() []Route {
 			Handler:     "indexHandler",
 		},
 		{
+			Path: "/network/health", Methods: []string{"GET"}, Versioned: false, Tag: "core",
+			Summary:     "Network reachability status",
+			Description: "Returns the most recent background network checks and any confirmed issue. Checks run at startup and hourly using the Client's proxy and TLS configuration; CDN host reachability does not verify access to signed asset URLs.",
+			Handler:     "networkHealthHandler",
+		},
+		{
 			Path: "/report", Methods: []string{"POST"}, Versioned: true, Tag: "core",
 			Summary:     "Poll for tasks",
 			Description: "Primary polling endpoint for add-ons. Subscribes the add-on on first call, refreshes the inactivity timer and returns the list of pending/finished/error tasks for the calling app. Rejects add-ons that do not send addon_version. The host software is identified by `software` (e.g. \"Blender\", \"Godot\", \"Unreal\") and `software_version`; without `software` the add-on registers as Blender with `blender_version`. For Blender, `software_version` and `blender_version` are equivalent and `software_version` wins on conflict; `software_version` without `software` is ignored. Inconsistent identity is only logged, never rejected. The identity only labels the app (browser discovery, Origin-Name header); it does not change task behavior.",

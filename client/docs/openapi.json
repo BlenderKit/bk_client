@@ -868,6 +868,27 @@
         ]
       }
     },
+    "/network/health": {
+      "get": {
+        "description": "Returns the most recent background network checks and any confirmed issue. Checks run at startup and hourly using the Client's proxy and TLS configuration; CDN host reachability does not verify access to signed asset URLs.",
+        "operationId": "networkHealthHandler",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Bad request (invalid or unparseable body)."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "summary": "Network reachability status",
+        "tags": [
+          "core"
+        ]
+      }
+    },
     "/notifications/mark_notification_read": {
       "post": {
         "description": "Marks a server notification as read.\n\nRequires a logged-in Blendkit API key.",

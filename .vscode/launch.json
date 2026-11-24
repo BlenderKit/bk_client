@@ -28,6 +28,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
+            "dlvFlags": ["--check-go-version=false"],
             "program": "${workspaceFolder}/client",
             "cwd": "${workspaceFolder}/client",
             "args": []
@@ -38,6 +39,7 @@
             "type": "go",
             "request": "launch",
             "mode": "debug",
+            "dlvFlags": ["--check-go-version=false"],
             "program": "${workspaceFolder}/client",
             "cwd": "${workspaceFolder}/client",
             "args": []
@@ -74,6 +76,7 @@
             "type": "go",
             "request": "launch",
             "mode": "test",
+            "dlvFlags": ["--check-go-version=false"],
             "program": "${workspaceFolder}/client",
             "cwd": "${workspaceFolder}/client"
         },
