@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795171366590,
+  "lastUpdate": 1795561663547,
   "repoUrl": "https://github.com/BlenderKit/bk_client",
   "entries": {
     "Performance Benchmarks - bk_client": [
@@ -28440,6 +28440,366 @@ window.BENCHMARK_DATA = {
             "value": 33,
             "unit": "allocs/op",
             "extra": "386121 times\n4 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "miki.hons@gmail.com",
+            "name": "Tweekazoid",
+            "username": "Tweekazoid"
+          },
+          "committer": {
+            "email": "miki.hons@gmail.com",
+            "name": "Tweekazoid",
+            "username": "Tweekazoid"
+          },
+          "distinct": true,
+          "id": "ee545041def2cfb23576f855dc08e0b9ac29718d",
+          "message": "feat: add network health check endpoint and update client status page",
+          "timestamp": "2026-11-25T00:06:41+01:00",
+          "tree_id": "2af954d9404d95f7de621c9e0d766933266f0a01",
+          "url": "https://github.com/BlenderKit/bk_client/commit/ee545041def2cfb23576f855dc08e0b9ac29718d"
+        },
+        "date": 1795561662741,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkGetAvailableSoftwares/0_running",
+            "value": 11.36,
+            "unit": "ns/op\t       0 B/op\t       0 allocs/op",
+            "extra": "104526534 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/0_running - ns/op",
+            "value": 11.36,
+            "unit": "ns/op",
+            "extra": "104526534 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/0_running - B/op",
+            "value": 0,
+            "unit": "B/op",
+            "extra": "104526534 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/0_running - allocs/op",
+            "value": 0,
+            "unit": "allocs/op",
+            "extra": "104526534 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/1_running",
+            "value": 71.2,
+            "unit": "ns/op\t     160 B/op\t       1 allocs/op",
+            "extra": "16030720 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/1_running - ns/op",
+            "value": 71.2,
+            "unit": "ns/op",
+            "extra": "16030720 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/1_running - B/op",
+            "value": 160,
+            "unit": "B/op",
+            "extra": "16030720 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/1_running - allocs/op",
+            "value": 1,
+            "unit": "allocs/op",
+            "extra": "16030720 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/2_running",
+            "value": 97.9,
+            "unit": "ns/op\t     320 B/op\t       1 allocs/op",
+            "extra": "12557959 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/2_running - ns/op",
+            "value": 97.9,
+            "unit": "ns/op",
+            "extra": "12557959 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/2_running - B/op",
+            "value": 320,
+            "unit": "B/op",
+            "extra": "12557959 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/2_running - allocs/op",
+            "value": 1,
+            "unit": "allocs/op",
+            "extra": "12557959 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/4_running",
+            "value": 147.7,
+            "unit": "ns/op\t     640 B/op\t       1 allocs/op",
+            "extra": "7568727 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/4_running - ns/op",
+            "value": 147.7,
+            "unit": "ns/op",
+            "extra": "7568727 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/4_running - B/op",
+            "value": 640,
+            "unit": "B/op",
+            "extra": "7568727 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/4_running - allocs/op",
+            "value": 1,
+            "unit": "allocs/op",
+            "extra": "7568727 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/8_running",
+            "value": 258.6,
+            "unit": "ns/op\t    1280 B/op\t       1 allocs/op",
+            "extra": "4532246 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/8_running - ns/op",
+            "value": 258.6,
+            "unit": "ns/op",
+            "extra": "4532246 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/8_running - B/op",
+            "value": 1280,
+            "unit": "B/op",
+            "extra": "4532246 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/8_running - allocs/op",
+            "value": 1,
+            "unit": "allocs/op",
+            "extra": "4532246 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/64_running",
+            "value": 1571,
+            "unit": "ns/op\t   10240 B/op\t       1 allocs/op",
+            "extra": "815060 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/64_running - ns/op",
+            "value": 1571,
+            "unit": "ns/op",
+            "extra": "815060 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/64_running - B/op",
+            "value": 10240,
+            "unit": "B/op",
+            "extra": "815060 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkGetAvailableSoftwares/64_running - allocs/op",
+            "value": 1,
+            "unit": "allocs/op",
+            "extra": "815060 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkTaskFinish/Finish_task_with_empty_initial_message",
+            "value": 2.495,
+            "unit": "ns/op\t       0 B/op\t       0 allocs/op",
+            "extra": "477102316 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkTaskFinish/Finish_task_with_empty_initial_message - ns/op",
+            "value": 2.495,
+            "unit": "ns/op",
+            "extra": "477102316 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkTaskFinish/Finish_task_with_empty_initial_message - B/op",
+            "value": 0,
+            "unit": "B/op",
+            "extra": "477102316 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkTaskFinish/Finish_task_with_empty_initial_message - allocs/op",
+            "value": 0,
+            "unit": "allocs/op",
+            "extra": "477102316 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkTaskFinish/Finish_already_finished_task",
+            "value": 2.471,
+            "unit": "ns/op\t       0 B/op\t       0 allocs/op",
+            "extra": "488591804 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkTaskFinish/Finish_already_finished_task - ns/op",
+            "value": 2.471,
+            "unit": "ns/op",
+            "extra": "488591804 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkTaskFinish/Finish_already_finished_task - B/op",
+            "value": 0,
+            "unit": "B/op",
+            "extra": "488591804 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkTaskFinish/Finish_already_finished_task - allocs/op",
+            "value": 0,
+            "unit": "allocs/op",
+            "extra": "488591804 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNewTask/New_task_with_nil_data",
+            "value": 115.7,
+            "unit": "ns/op\t     368 B/op\t       5 allocs/op",
+            "extra": "9269432 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNewTask/New_task_with_nil_data - ns/op",
+            "value": 115.7,
+            "unit": "ns/op",
+            "extra": "9269432 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNewTask/New_task_with_nil_data - B/op",
+            "value": 368,
+            "unit": "B/op",
+            "extra": "9269432 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNewTask/New_task_with_nil_data - allocs/op",
+            "value": 5,
+            "unit": "allocs/op",
+            "extra": "9269432 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNewTask/New_task_with_map_data",
+            "value": 91.51,
+            "unit": "ns/op\t     320 B/op\t       4 allocs/op",
+            "extra": "15380686 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNewTask/New_task_with_map_data - ns/op",
+            "value": 91.51,
+            "unit": "ns/op",
+            "extra": "15380686 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNewTask/New_task_with_map_data - B/op",
+            "value": 320,
+            "unit": "B/op",
+            "extra": "15380686 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNewTask/New_task_with_map_data - allocs/op",
+            "value": 4,
+            "unit": "allocs/op",
+            "extra": "15380686 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNewTask/New_task_with_slice_data",
+            "value": 89.76,
+            "unit": "ns/op\t     320 B/op\t       4 allocs/op",
+            "extra": "11540546 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNewTask/New_task_with_slice_data - ns/op",
+            "value": 89.76,
+            "unit": "ns/op",
+            "extra": "11540546 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNewTask/New_task_with_slice_data - B/op",
+            "value": 320,
+            "unit": "B/op",
+            "extra": "11540546 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNewTask/New_task_with_slice_data - allocs/op",
+            "value": 4,
+            "unit": "allocs/op",
+            "extra": "11540546 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReportHandler/Single_software_spams",
+            "value": 2527,
+            "unit": "ns/op\t    3152 B/op\t      31 allocs/op",
+            "extra": "579771 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReportHandler/Single_software_spams - ns/op",
+            "value": 2527,
+            "unit": "ns/op",
+            "extra": "579771 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReportHandler/Single_software_spams - B/op",
+            "value": 3152,
+            "unit": "B/op",
+            "extra": "579771 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReportHandler/Single_software_spams - allocs/op",
+            "value": 31,
+            "unit": "allocs/op",
+            "extra": "579771 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReportHandler/Two_softwares_spams",
+            "value": 2410,
+            "unit": "ns/op\t    3167 B/op\t      32 allocs/op",
+            "extra": "521607 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReportHandler/Two_softwares_spams - ns/op",
+            "value": 2410,
+            "unit": "ns/op",
+            "extra": "521607 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReportHandler/Two_softwares_spams - B/op",
+            "value": 3167,
+            "unit": "B/op",
+            "extra": "521607 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReportHandler/Two_softwares_spams - allocs/op",
+            "value": 32,
+            "unit": "allocs/op",
+            "extra": "521607 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReportHandler/Four_softwares_spams",
+            "value": 2550,
+            "unit": "ns/op\t    3168 B/op\t      33 allocs/op",
+            "extra": "398163 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReportHandler/Four_softwares_spams - ns/op",
+            "value": 2550,
+            "unit": "ns/op",
+            "extra": "398163 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReportHandler/Four_softwares_spams - B/op",
+            "value": 3168,
+            "unit": "B/op",
+            "extra": "398163 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReportHandler/Four_softwares_spams - allocs/op",
+            "value": 33,
+            "unit": "allocs/op",
+            "extra": "398163 times\n4 procs"
           }
         ]
       }
