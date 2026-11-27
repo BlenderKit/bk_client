@@ -133,6 +133,7 @@ func init() {
 
 	BKLog = log.New(os.Stdout, "⬡  ", log.LstdFlags|log.Lmicroseconds)   // Hexagon like Blendkit logo
 	ChanLog = log.New(os.Stdout, "<- ", log.LstdFlags|log.Lmicroseconds) // Same symbols as channel in Go
+
 }
 
 // Endless loop to handle channels
@@ -272,14 +273,13 @@ func main() {
 	StartingSoftwareName = flag.String("software", "", "name of the software whose add-on starts the Client")
 	StartingPID = flag.String("pid", "", "PID of the process (running software) whose add-on starts the Client")
 	singleInstance := flag.Bool("single-instance", false, "if a Client of this version is already running, exit gracefully and leave the original running")
-	systemIDOverride := flag.String("system_id", "", "machine ID (15 digits) to report instead of the persisted or MAC-derived one")
+	systemIDFlag := flag.String("system_id", "", "machine ID (15 digits) to report instead of the persisted or MAC-derived one")
 	globalDir := flag.String("global_dir", "", "configured Blendkit data directory")
 	flag.Parse()
 	GlobalDir = *globalDir
 
 	// The Client owns the machine ID: flag > persisted file > MAC-derived value
-	// from init(), which is persisted on first use. See resolveSystemID.
-	resolved := resolveSystemID(*systemIDOverride, *SystemID)
+	resolved := resolveSystemID(*systemIDFlag, *SystemID)
 	SystemID = &resolved
 
 	// A standalone Client is one a user started directly — no add-on passed its
